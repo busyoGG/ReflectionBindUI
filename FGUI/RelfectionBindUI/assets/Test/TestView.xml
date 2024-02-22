@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="800,600">
+  <displayList>
+    <text id="n0_k4sd" name="n0" xy="28,17" size="256,40" fontSize="12" autoSize="none" text=""/>
+    <list id="n1_k4sd" name="n1" xy="29,76" size="200,300" overflow="scroll" defaultItem="ui://5bl7a94uk4sd2">
+      <item/>
+    </list>
+    <component id="n2_k4sd" name="n2" src="k4sd1" fileName="Btn.xml" xy="329,17" size="145,43"/>
+    <loader id="n3_k4sd" name="n3" xy="318,110" size="144,139" align="center" vAlign="middle" fill="scale" autoSize="true"/>
+  </displayList>
+</component>
