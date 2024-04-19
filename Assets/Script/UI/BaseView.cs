@@ -10,10 +10,6 @@ using System.Runtime.InteropServices;
 
 public class BaseView : UIBase
 {
-    public string id;
-    public GComponent main;
-    public string name;
-
     /// <summary>
     /// 只在创建的时候执行
     /// </summary>

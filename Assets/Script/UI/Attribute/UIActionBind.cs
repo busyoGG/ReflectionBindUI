@@ -10,9 +10,12 @@ public class UIActionBind : Attribute
 
     public string _path;
 
-    public UIActionBind(string type,string path)
+    public string[] _extra;
+
+    public UIActionBind(string type,string path,params string[] extra)
     {
         _type = type;
         _path = path;
+        _extra = extra;
     }
 }

@@ -32,6 +32,21 @@ public class TestView : BaseView
         EventManager.TriggerEvent("show_console", null);
     }
 
+    [UIActionBind("DragEnd","2")]
+    private void OnDrag(EventContext context)
+    {
+        //添加拖拽数据
+        AddDropData(1,2,"测试数据");
+        Debug.Log("结束拖拽");
+        Debug.Log(GRoot.inst.touchTarget);
+    }
+    
+    [UIActionBind("Drop","3")]
+    private void OnDrop(object data)
+    {
+        ConsoleUtils.Log("拖拽放置",data);
+    }
+
     [UIListenerBind("show_console")]
     private void ShowConsole(ArrayList data)
     {
