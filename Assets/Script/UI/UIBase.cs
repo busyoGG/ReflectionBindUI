@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 public class UIBase
 {
@@ -103,14 +102,21 @@ public class UIBase
     {
         UIDataBind uiBind = (UIDataBind)attr;
 
-        var fieldInfo = prop.PropertyType.GetField("_onValueChange", _flag);
+        var onValueChange = prop.PropertyType.GetField("_onValueChange", _flag);
+        var onUIChange = prop.PropertyType.GetField("_onUIChange", _flag);
+        var val = prop.PropertyType.GetField("_value", _flag);
 
         var value = prop.GetValue(this);
         if (value == null)
         {
-            if (prop.PropertyType == typeof(UIProp))
+            Type propType = prop.PropertyType;
+            if (propType == typeof(StringUIProp))
             {
-                value = new UIProp();
+                value = new StringUIProp();
+            }
+            else if (propType == typeof(DoubleUIProp))
+            {
+                value = new DoubleUIProp();
             }
             else
             {
@@ -133,8 +139,14 @@ public class UIBase
                         textField.text = data;
                     }
                 }
+                
+                string ActionTextUI()
+                {
+                    return textField.text;
+                }
 
-                fieldInfo?.SetValue(value, (Action<string>)ActionText);
+                onValueChange?.SetValue(value, (Action<string>)ActionText);
+                onUIChange?.SetValue(value, (Func<string>)ActionTextUI);
                 break;
             case "TextInput":
                 GTextInput textInput = FguiUtils.GetUI<GTextInput>(main, uiBind._path);
@@ -146,8 +158,14 @@ public class UIBase
                         textInput.text = data;
                     }
                 }
+                
+                string ActionInputUI()
+                {
+                    return textInput.text;
+                }
 
-                fieldInfo?.SetValue(value, (Action<string>)ActionInput);
+                onValueChange?.SetValue(value, (Action<string>)ActionInput);
+                onUIChange?.SetValue(value, (Func<string>)ActionInputUI);
                 break;
             case "Image":
                 GImage image = FguiUtils.GetUI<GImage>(main, uiBind._path);
@@ -159,8 +177,14 @@ public class UIBase
                         image.icon = data;
                     }
                 }
+                
+                string ActionImageUI()
+                {
+                    return image.icon;
+                }
 
-                fieldInfo?.SetValue(value, (Action<string>)ActionImage);
+                onValueChange?.SetValue(value, (Action<string>)ActionImage);
+                onUIChange?.SetValue(value, (Func<string>)ActionImageUI);
                 break;
             case "Loader":
                 GLoader loader = FguiUtils.GetUI<GLoader>(main, uiBind._path);
@@ -174,8 +198,14 @@ public class UIBase
 
                     // ConsoleUtils.Log("替换图片", loader?.url);
                 }
+                
+                string ActionLoaderUI()
+                {
+                    return loader.url;
+                }
 
-                fieldInfo?.SetValue(value, (Action<string>)ActionLoader);
+                onValueChange?.SetValue(value, (Action<string>)ActionLoader);
+                onUIChange?.SetValue(value, (Func<string>)ActionLoaderUI);
                 break;
             case "List":
                 GList list = FguiUtils.GetUI<GList>(main, uiBind._path);
@@ -212,7 +242,25 @@ public class UIBase
                     }
                 }
 
-                fieldInfo?.SetValue(value, (Action<int>)ActionList);
+                onValueChange?.SetValue(value, (Action<int>)ActionList);
+                break;
+            case "Slider":
+                GSlider slider = FguiUtils.GetUI<GSlider>(main, uiBind._path);
+                void ActionSlider(double data)
+                {
+                    if (slider != null)
+                    {
+                        slider.value = data;
+                    }
+                }
+
+                double ActionSliderUI()
+                {
+                    return slider.value;
+                }
+
+                onValueChange?.SetValue(value, (Action<double>)ActionSlider);
+                onUIChange?.SetValue(value,(Func<double>)ActionSliderUI);
                 break;
         }
     }
@@ -278,7 +326,7 @@ public class UIBase
                 break;
             case "DragEnd":
                 obj.draggable = true;
-                isAgent = uiBind._extra.Length == 0 || uiBind._extra[0] == "Self";
+                isAgent = uiBind._extra.Length == 0 || uiBind._extra[0] != "Self";
                 SetDragListener(obj, 2, method, isAgent);
 
                 break;
@@ -346,7 +394,7 @@ public class UIBase
                 context.PreventDefault();
                 //复制UI
                 GameObject origin = obj.displayObject.gameObject;
-                _copy = Object.Instantiate(origin, main.displayObject.gameObject.transform, true);
+                _copy = GameObject.Instantiate(origin, main.displayObject.gameObject.transform, true);
                 CompClone(_copy.transform, origin.transform);
 
                 //同步属性

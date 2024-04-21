@@ -5,6 +5,8 @@
     <component id="k4sd1" name="Btn.xml" path="/" exported="true"/>
     <component id="k4sd2" name="ListComp.xml" path="/" exported="true"/>
     <image id="k4sd3" name="Icon.jpg" path="/" exported="true"/>
+    <component id="kvxz4" name="Slider_grip.xml" path="/"/>
+    <component id="kvxz5" name="Slider.xml" path="/" exported="true"/>
   </resources>
   <publish name=""/>
 </packageDescription>

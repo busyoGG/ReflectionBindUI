@@ -1,6 +1,6 @@
 using System;
 
-public class UIProp
+public class StringUIProp
 {
     public string _value;
 
@@ -13,15 +13,16 @@ public class UIProp
         set
         {
             _value = value;
-            Invoke();
+            InvokeUI();
         }
     }
 
     private Action<string> _onValueChange = null;
+    private Func<string> _onUIChange = null;
 
-    public UIProp() { }
+    public StringUIProp() { }
 
-    public UIProp(string value)
+    public StringUIProp(string value)
     {
         _value = value;
     }
@@ -35,8 +36,22 @@ public class UIProp
     {
         this.val = value.ToString();
     }
+    
+    public string Get()
+    {
+        InvokeValue();
+        return this.val;
+    }
 
-    public void Invoke()
+    public void InvokeValue()
+    {
+        if (_onUIChange != null)
+        {
+            _value = _onUIChange.Invoke();
+        }
+    }
+
+    public void InvokeUI()
     {
         _onValueChange?.Invoke(val);
     }

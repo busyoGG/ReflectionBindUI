@@ -6,11 +6,19 @@ using UnityEngine;
 public class TestView : BaseView
 {
     [UIDataBind("TextField","0")]
-    private UIProp _testText {  get; set; }
+    private StringUIProp _testText {  get; set; }
+    
     [UIDataBind("List","n1")]
     private UIListProp<string> _testList { get; set; }
+    
     [UIDataBind("Loader","3")]
-    private UIProp _loaderUrl { get; set; }
+    private StringUIProp _loaderUrl { get; set; }
+    
+    [UIDataBind("Slider","4")]
+    private DoubleUIProp _slideValue { get; set; }
+    
+    [UIDataBind("TextInput","5")]
+    private StringUIProp _input { get; set; }
 
     [UICompBind("Loader","3")]
     private GLoader _loader { get; set; }
@@ -32,7 +40,7 @@ public class TestView : BaseView
         EventManager.TriggerEvent("show_console", null);
     }
 
-    [UIActionBind("DragEnd","2")]
+    [UIActionBind("DragEnd","2","Self")]
     private void OnDrag(EventContext context)
     {
         //添加拖拽数据
@@ -53,5 +61,8 @@ public class TestView : BaseView
         ConsoleUtils.Log("触发了事件");
         _loaderUrl.Set("ui://Test/Icon");
         _testList.Set(new List<string> { "a", "b", "c" });
+        
+        // _slideValue.Set(70);
+        ConsoleUtils.Log(_slideValue.Get(),_input.Get());
     }
 }
