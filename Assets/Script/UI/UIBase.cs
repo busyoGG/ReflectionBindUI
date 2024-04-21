@@ -71,27 +71,27 @@ public class UIBase
 
         switch (uiBind._type)
         {
-            case "Comp":
+            case UIType.Comp:
                 GComponent comp = FguiUtils.GetUI<GComponent>(main, uiBind._path);
                 prop.SetValue(this, comp);
                 break;
-            case "TextField":
+            case UIType.TextField:
                 GTextField textField = FguiUtils.GetUI<GTextField>(main, uiBind._path);
                 prop.SetValue(this, textField);
                 break;
-            case "TextInput":
+            case UIType.TextInput:
                 GTextInput textInput = FguiUtils.GetUI<GTextInput>(main, uiBind._path);
                 prop.SetValue(this, textInput);
                 break;
-            case "Image":
+            case UIType.Image:
                 GImage image = FguiUtils.GetUI<GImage>(main, uiBind._path);
                 prop.SetValue(this, image);
                 break;
-            case "Loader":
+            case UIType.Loader:
                 GLoader loader = FguiUtils.GetUI<GLoader>(main, uiBind._path);
                 prop.SetValue(this, loader);
                 break;
-            case "List":
+            case UIType.List:
                 GList list = FguiUtils.GetUI<GList>(main, uiBind._path);
                 prop.SetValue(this, list);
                 break;
@@ -104,7 +104,6 @@ public class UIBase
 
         var onValueChange = prop.PropertyType.GetField("_onValueChange", _flag);
         var onUIChange = prop.PropertyType.GetField("_onUIChange", _flag);
-        var val = prop.PropertyType.GetField("_value", _flag);
 
         var value = prop.GetValue(this);
         if (value == null)
@@ -129,7 +128,7 @@ public class UIBase
 
         switch (uiBind._type)
         {
-            case "TextField":
+            case UIType.TextField:
                 GTextField textField = FguiUtils.GetUI<GTextField>(main, uiBind._path);
 
                 void ActionText(string data)
@@ -139,7 +138,7 @@ public class UIBase
                         textField.text = data;
                     }
                 }
-                
+
                 string ActionTextUI()
                 {
                     return textField.text;
@@ -148,7 +147,7 @@ public class UIBase
                 onValueChange?.SetValue(value, (Action<string>)ActionText);
                 onUIChange?.SetValue(value, (Func<string>)ActionTextUI);
                 break;
-            case "TextInput":
+            case UIType.TextInput:
                 GTextInput textInput = FguiUtils.GetUI<GTextInput>(main, uiBind._path);
 
                 void ActionInput(string data)
@@ -158,7 +157,7 @@ public class UIBase
                         textInput.text = data;
                     }
                 }
-                
+
                 string ActionInputUI()
                 {
                     return textInput.text;
@@ -167,7 +166,7 @@ public class UIBase
                 onValueChange?.SetValue(value, (Action<string>)ActionInput);
                 onUIChange?.SetValue(value, (Func<string>)ActionInputUI);
                 break;
-            case "Image":
+            case UIType.Image:
                 GImage image = FguiUtils.GetUI<GImage>(main, uiBind._path);
 
                 void ActionImage(string data)
@@ -177,7 +176,7 @@ public class UIBase
                         image.icon = data;
                     }
                 }
-                
+
                 string ActionImageUI()
                 {
                     return image.icon;
@@ -186,7 +185,7 @@ public class UIBase
                 onValueChange?.SetValue(value, (Action<string>)ActionImage);
                 onUIChange?.SetValue(value, (Func<string>)ActionImageUI);
                 break;
-            case "Loader":
+            case UIType.Loader:
                 GLoader loader = FguiUtils.GetUI<GLoader>(main, uiBind._path);
 
                 void ActionLoader(string data)
@@ -198,7 +197,7 @@ public class UIBase
 
                     // ConsoleUtils.Log("替换图片", loader?.url);
                 }
-                
+
                 string ActionLoaderUI()
                 {
                     return loader.url;
@@ -207,7 +206,7 @@ public class UIBase
                 onValueChange?.SetValue(value, (Action<string>)ActionLoader);
                 onUIChange?.SetValue(value, (Func<string>)ActionLoaderUI);
                 break;
-            case "List":
+            case UIType.List:
                 GList list = FguiUtils.GetUI<GList>(main, uiBind._path);
 
                 void ActionList(int data)
@@ -244,8 +243,9 @@ public class UIBase
 
                 onValueChange?.SetValue(value, (Action<int>)ActionList);
                 break;
-            case "Slider":
+            case UIType.Slider:
                 GSlider slider = FguiUtils.GetUI<GSlider>(main, uiBind._path);
+
                 void ActionSlider(double data)
                 {
                     if (slider != null)
@@ -260,7 +260,7 @@ public class UIBase
                 }
 
                 onValueChange?.SetValue(value, (Action<double>)ActionSlider);
-                onUIChange?.SetValue(value,(Func<double>)ActionSliderUI);
+                onUIChange?.SetValue(value, (Func<double>)ActionSliderUI);
                 break;
         }
     }
@@ -274,7 +274,7 @@ public class UIBase
 
         switch (uiBind._type)
         {
-            case "Click":
+            case UIAction.Click:
                 var methodParamsClick = method.GetParameters();
                 Delegate click;
                 if (methodParamsClick.Length == 0)
@@ -289,15 +289,15 @@ public class UIBase
                 }
 
                 break;
-            case "ListRender":
+            case UIAction.ListRender:
                 var render = Delegate.CreateDelegate(typeof(ListItemRenderer), this, method);
                 obj.asList.itemRenderer = (ListItemRenderer)render;
                 break;
-            case "ListProvider":
+            case UIAction.ListProvider:
                 var provider = Delegate.CreateDelegate(typeof(ListItemProvider), this, method);
                 obj.asList.itemProvider = (ListItemProvider)provider;
                 break;
-            case "ListClick":
+            case UIAction.ListClick:
                 methodParamsListClick = method.GetParameters();
                 Delegate listClick;
                 if (methodParamsListClick.Length == 0)
@@ -312,25 +312,22 @@ public class UIBase
                 }
 
                 break;
-            case "DragStart":
+            case UIAction.DragStart:
                 obj.draggable = true;
                 isAgent = uiBind._extra.Length == 0 || uiBind._extra[0] == "Self";
                 SetDragListener(obj, 0, method, isAgent);
-
                 break;
-            case "DragHold":
+            case UIAction.DragHold:
                 obj.draggable = true;
                 isAgent = uiBind._extra.Length == 0 || uiBind._extra[0] == "Self";
                 SetDragListener(obj, 1, method, isAgent);
-
                 break;
-            case "DragEnd":
+            case UIAction.DragEnd:
                 obj.draggable = true;
                 isAgent = uiBind._extra.Length == 0 || uiBind._extra[0] != "Self";
                 SetDragListener(obj, 2, method, isAgent);
-
                 break;
-            case "Drop":
+            case UIAction.Drop:
                 Action<object> drop = (Action<object>)Delegate.CreateDelegate(typeof(Action<object>), this, method);
 
                 _dropDic[obj.id] = true;
@@ -359,6 +356,41 @@ public class UIBase
     protected void AddDropData(object data)
     {
         _dropData.Add(data);
+    }
+
+    /// <summary>
+    /// 设置拖拽，用于list内元素
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="action"></param>
+    /// <param name="obj"></param>
+    protected void SetDrag(UIAction type, GObject obj, Action dragAction)
+    {
+        obj.draggable = true;
+        Action action = () =>
+        {
+            //停止本次滚动
+            obj.parent.asList.scrollPane.CancelDragging();
+            dragAction();
+        };
+        switch (type)
+        {
+            case UIAction.DragStart:
+                SetDragListener(obj, 0, action);
+                break;
+            case UIAction.DragHold:
+                SetDragListener(obj, 1, action);
+                break;
+            case UIAction.DragEnd:
+                SetDragListener(obj, 2, action);
+                break;
+        }
+    }
+
+    protected void SetDrop(GObject obj, Action<object> action)
+    {
+        _dropDic[obj.id] = true;
+        EventManager.AddListening(obj.id, "OnDrop_" + obj.id, data => action(_dropData));
     }
 
     /// <summary>
@@ -486,6 +518,50 @@ public class UIBase
 
             AddDropListener(obj);
         }
+    }
+
+    private void SetDragListener(GObject obj, int type, Action dragAction)
+    {
+        obj.onDragStart.Add(context =>
+        {
+            context.PreventDefault();
+            //复制UI
+            GameObject origin = obj.displayObject.gameObject;
+            _copy = GameObject.Instantiate(origin, main.displayObject.gameObject.transform, true);
+            CompClone(_copy.transform, origin.transform);
+
+            //同步属性
+            _copy.transform.position = origin.transform.position;
+            _copy.transform.localScale = origin.transform.localScale;
+            _copy.transform.rotation = origin.transform.rotation;
+
+            //拖拽跟随逻辑
+            _uiDrag = _copy.AddComponent<UIDrag>();
+            _uiDrag.SetOriginMousePos();
+
+            Action action = () =>
+            {
+                //清除放置数据
+                ClearDropData();
+                dragAction.Invoke();
+            };
+
+            switch (type)
+            {
+                case 0:
+                    _uiDrag.SetStart(action);
+                    break;
+                case 1:
+                    _uiDrag.SetUpdate(action);
+                    break;
+                case 2:
+                    _uiDrag.SetEnd(action);
+                    break;
+            }
+
+            AddDropListener(obj);
+            RemoveDragAgent();
+        });
     }
 
     /// <summary>

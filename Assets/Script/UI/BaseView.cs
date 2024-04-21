@@ -1,13 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using FairyGUI;
-using System;
-using System.Reflection;
-using Unity.VisualScripting;
-using System.Linq;
-using System.Runtime.InteropServices;
-
 public class BaseView : UIBase
 {
     /// <summary>

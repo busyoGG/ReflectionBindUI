@@ -6,10 +6,10 @@ using System;
 [AttributeUsage(AttributeTargets.Property)]
 public class UIDataBind : Attribute
 {
-    public string _type;
+    public UIType _type;
     public string _path;
     public string[] _extra;
-    public UIDataBind(string type, string path, params string[] extra)
+    public UIDataBind(UIType type, string path, params string[] extra)
     {
         _type = type;
         _path = path;
