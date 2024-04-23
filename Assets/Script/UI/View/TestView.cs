@@ -5,17 +5,23 @@ using UnityEngine;
 
 public class TestView : BaseView
 {
-    [UIDataBind(UIType.TextField, "0")] private StringUIProp _testText { get; set; }
+    [UIDataBind(UIType.TextField, "0")]
+    private StringUIProp _testText { get; set; }
 
-    [UIDataBind(UIType.List, "n1")] private UIListProp<string> _testList { get; set; }
+    [UIDataBind(UIType.List, "n1")]
+    private UIListProp<string> _testList { get; set; }
 
-    [UIDataBind(UIType.Loader, "3")] private StringUIProp _loaderUrl { get; set; }
+    [UIDataBind(UIType.Loader, "3")]
+    private StringUIProp _loaderUrl { get; set; }
 
-    [UIDataBind(UIType.Slider, "4")] private DoubleUIProp _slideValue { get; set; }
+    [UIDataBind(UIType.Slider, "4")]
+    private DoubleUIProp _slideValue { get; set; }
 
-    [UIDataBind(UIType.TextInput, "5")] private StringUIProp _input { get; set; }
+    [UIDataBind(UIType.TextInput, "5")]
+    private StringUIProp _input { get; set; }
 
-    [UICompBind(UIType.Loader, "3")] private GLoader _loader { get; set; }
+    [UICompBind(UIType.Loader, "3")]
+    private GLoader _loader { get; set; }
 
 
     [UIActionBind(UIAction.ListRender, "1")]
@@ -31,11 +37,8 @@ public class TestView : BaseView
             ConsoleUtils.Log("开始拖拽");
             AddDropData(index);
         });
-        
-        SetDrop(comp, (object data) =>
-        {
-            ConsoleUtils.Log("放置",data);
-        });
+
+        SetDrop(comp, (object data) => { ConsoleUtils.Log("放置", data); });
     }
 
     [UIActionBind(UIAction.Click, "2")]
@@ -69,5 +72,15 @@ public class TestView : BaseView
 
         // _slideValue.Set(70);
         ConsoleUtils.Log(_slideValue.Get(), _input.Get());
+    }
+
+    protected override void TweenIn()
+    {
+        AddTween(TweenTarget.X,500,2000,TweenEaseType.CircOut);
+    }
+
+    protected override void LateOnShow()
+    {
+        ConsoleUtils.Log("缓动回调",Time.time);
     }
 }

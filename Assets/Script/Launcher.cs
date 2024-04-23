@@ -1,3 +1,4 @@
+using System;
 using FairyGUI;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,9 +14,16 @@ public enum UIMouseState
 public class Launcher : MonoBehaviour
 {
     private static UIMouseState _leftMouseState;
+
+    private void Awake()
+    {
+        UITweenManager.Ins().Init();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
+        
         _leftMouseState = UIMouseState.Up;
         
         UIPackage.AddPackage("FGUI/Test");
@@ -25,6 +33,7 @@ public class Launcher : MonoBehaviour
         GRoot.inst.AddChild(testView.main);
 
         testView.OnAwake();
+        testView.Show();
     }
 
     private void OnGUI()

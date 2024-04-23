@@ -20,3 +20,19 @@ public enum UIAction
     DragEnd,
     Drop
 }
+
+public enum TweenTarget
+{
+    None,
+    X,
+    Y,
+    Position,
+    Size,
+    ScaleX,
+    ScaleY,
+    Scale,
+    Rotation,
+    Alpha,
+    Heihgt,
+    Width
+}
