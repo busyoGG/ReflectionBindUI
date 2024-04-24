@@ -34,6 +34,7 @@ public class Launcher : MonoBehaviour
 
         testView.OnAwake();
         testView.Show();
+        // testView.Hide();
     }
 
     private void OnGUI()

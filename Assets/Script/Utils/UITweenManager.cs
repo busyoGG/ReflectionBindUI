@@ -50,34 +50,64 @@ public class UITweenManager : Singleton<UITweenManager>
     private Action<float> GenerateUpdater(GObject obj, TweenTarget target, float end, float duration,
         TweenEaseType ease)
     {
+        float origin = 0;
+        switch (target)
+        {
+            case TweenTarget.X:
+                origin = obj.x;
+                break;
+            case TweenTarget.Y:
+                origin = obj.y;
+                break;
+            case TweenTarget.ScaleX:
+                origin =  obj.scaleX;
+                break;
+            case TweenTarget.ScaleY:
+                origin =  obj.scaleY;
+                break;
+            case TweenTarget.Rotation:
+                origin =  obj.rotation;
+                break;
+            case TweenTarget.Alpha:
+                origin =  obj.alpha;
+                break;
+            case TweenTarget.Heihgt:
+                origin =  obj.height;
+                break;
+            case TweenTarget.Width:
+                origin =  obj.width;
+                break;
+        }
+        
         void Action(float time)
         {
+            
             float ratio = EaseUtil.Evaluate(ease, time, duration, 1.7f, 0);
             switch (target)
             {
                 case TweenTarget.X:
-                    obj.x = ratio * end;
+                    obj.x = origin + ratio * end;
                     break;
                 case TweenTarget.Y:
-                    obj.y = ratio * end;
+                    obj.y = origin + ratio * end;
                     break;
                 case TweenTarget.ScaleX:
-                    obj.scaleX = ratio * end;
+                    obj.scaleX = origin + ratio * end;
                     break;
                 case TweenTarget.ScaleY:
-                    obj.scaleY = ratio * end;
+                    obj.scaleY = origin + ratio * end;
                     break;
                 case TweenTarget.Rotation:
-                    obj.rotation = ratio * end;
+                    obj.rotation = origin + ratio * end;
                     break;
                 case TweenTarget.Alpha:
-                    obj.alpha = ratio * end;
+                    obj.alpha = origin + ratio * end;
                     break;
                 case TweenTarget.Heihgt:
-                    obj.height = ratio * end;
+                    obj.height = origin + ratio * end;
                     break;
                 case TweenTarget.Width:
-                    obj.width = ratio * end;
+                    obj.width = origin + ratio * end;
                     break;
             }
         }
@@ -88,19 +118,33 @@ public class UITweenManager : Singleton<UITweenManager>
     private Action<float> GenerateUpdater(GObject obj, TweenTarget target, Vector2 end, float duration,
         TweenEaseType ease)
     {
+        Vector2 origin = Vector2.zero;
+        switch (target)
+        {
+            case TweenTarget.Position:
+                origin = obj.xy;
+                break;
+            case TweenTarget.Scale:
+                origin = obj.scale;
+                break;
+            case TweenTarget.Size:
+                origin = obj.size;
+                break;
+        }
+        
         void Action(float time)
         {
             float ratio = EaseUtil.Evaluate(ease, time, duration, 1.7f, 0);
             switch (target)
             {
                 case TweenTarget.Position:
-                    obj.xy = ratio * end;
+                    obj.xy = origin + ratio * end;
                     break;
                 case TweenTarget.Scale:
-                    obj.scale = ratio * end;
+                    obj.scale = origin + ratio * end;
                     break;
                 case TweenTarget.Size:
-                    obj.size = ratio * end;
+                    obj.size = origin + ratio * end;
                     break;
             }
         }

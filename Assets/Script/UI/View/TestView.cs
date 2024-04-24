@@ -76,11 +76,25 @@ public class TestView : BaseView
 
     protected override void TweenIn()
     {
+        main.x = -500;
         AddTween(TweenTarget.X,500,2000,TweenEaseType.CircOut);
+        
+        main.y = 500;
+        AddTween(TweenTarget.Y,-500,2000,TweenEaseType.Linear);
+        
+        main.scaleX = 0.5f;
+        AddTween(TweenTarget.ScaleX,0.5f,2000,TweenEaseType.CircOut);
+        
+        AddTween(TweenTarget.Rotation,50,2000,TweenEaseType.CircOut);
     }
 
     protected override void LateOnShow()
     {
         ConsoleUtils.Log("»º¶¯»Øµ÷",Time.time);
     }
+
+    // protected override void TweenOut()
+    // {
+    //     AddTween(TweenTarget.X,500,2000,TweenEaseType.CircOut);
+    // }
 }
