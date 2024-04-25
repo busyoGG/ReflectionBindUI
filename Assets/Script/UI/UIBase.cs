@@ -24,6 +24,15 @@ public class UIBase
 
     private readonly ArrayList _dropData = new ArrayList();
 
+    private int _floatId = 0;
+
+    private Dictionary<string, BaseView> _floatViews = new Dictionary<string, BaseView>();
+
+    /// <summary>
+    /// 正在显示的悬浮窗
+    /// </summary>
+    private BaseView _floatViewOnShow = null;
+
     protected void Bind()
     {
         Type type = GetType();
@@ -329,10 +338,46 @@ public class UIBase
                 break;
             case UIAction.Drop:
                 Action<object> drop = (Action<object>)Delegate.CreateDelegate(typeof(Action<object>), this, method);
-
                 _dropDic[obj.id] = true;
-
                 EventManager.AddListening(obj.id, "OnDrop_" + obj.id, data => drop.Invoke(data));
+                break;
+            case UIAction.Hover:
+                methodParamsListClick = method.GetParameters();
+                Delegate hover;
+                if (methodParamsListClick.Length == 0)
+                {
+                    hover = Delegate.CreateDelegate(typeof(EventCallback0), this, method);
+                    obj.onRollOver.Set((EventCallback0)hover);
+                }
+                else
+                {
+                    hover = Delegate.CreateDelegate(typeof(EventCallback1), this, method);
+                    obj.onRollOver.Set((EventCallback1)hover);
+                }
+
+                obj.onRollOver.Add(() =>
+                {
+                    if (_floatViewOnShow != null)
+                    {
+                        if (_floatViewOnShow.main.displayObject.gameObject.GetComponent<UIFollow>() != null)
+                        {
+                            _floatViewOnShow.main.xy = FguiUtils.GetMousePosition();
+                        }
+                        else
+                        {
+                            _floatViewOnShow.main.xy = obj.xy;
+                        }
+
+                        _floatViewOnShow.Show();
+                    }
+                });
+
+                //退出隐藏
+                obj.onRollOut.Set(() =>
+                {
+                    _floatViewOnShow?.Hide();
+                    _floatViewOnShow = null;
+                });
                 break;
         }
     }
@@ -403,6 +448,38 @@ public class UIBase
         {
             _dropData.Add(data);
         }
+    }
+
+    /// <summary>
+    /// 展示悬浮窗
+    /// </summary>
+    /// <param name="name"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    protected void ShowFloatView<T>(string name, string UIName, bool follow = false) where T : BaseView, new()
+    {
+        BaseView view;
+        _floatViews.TryGetValue(name, out view);
+        if (view == null)
+        {
+            view = new T();
+            view.id = "float_view_" + _floatId++;
+            view.name = name;
+            view.main = UIPackage.CreateObject("Test", UIName).asCom;
+            view.main.touchable = false;
+
+            if (follow)
+            {
+                UIFollow uiFollow = view.main.displayObject.gameObject.AddComponent<UIFollow>();
+                uiFollow.SetObj(view.main,main);
+            }
+
+            main.AddChild(view.main);
+            view.OnAwake();
+            _floatViews.Add(name,view);
+        }
+
+        _floatViewOnShow = view;
     }
 
     /// <summary>

@@ -1,3 +1,4 @@
+using UnityEngine;
 using FairyGUI;
 
 public class FguiUtils
@@ -42,5 +43,27 @@ public class FguiUtils
             }
         }
         return res as T;
+    }
+
+    /// <summary>
+    /// 获取鼠标在FGUI的坐标
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <returns></returns>
+    public static Vector2 GetMousePosition(GObject obj = null)
+    {
+        //鼠标在FGUI的坐标
+        Vector2 pos = Stage.inst.GetTouchPosition(-1);
+        Vector2 logicPos;
+        if (obj == null)
+        {
+            //鼠标屏幕位置转换为FGUI逻辑位置
+            logicPos = GRoot._inst.GlobalToLocal(pos);
+        }
+        else
+        {
+            logicPos = obj.GlobalToLocal(pos);
+        }
+        return logicPos;
     }
 }

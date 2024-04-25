@@ -18,7 +18,8 @@ public enum UIAction
     DragStart,
     DragHold,
     DragEnd,
-    Drop
+    Drop,
+    Hover
 }
 
 public enum TweenTarget

@@ -7,6 +7,7 @@
     <image id="k4sd3" name="Icon.jpg" path="/" exported="true"/>
     <component id="kvxz4" name="Slider_grip.xml" path="/"/>
     <component id="kvxz5" name="Slider.xml" path="/" exported="true"/>
+    <component id="rr3b6" name="HintView.xml" path="/" exported="true"/>
   </resources>
   <publish name=""/>
 </packageDescription>

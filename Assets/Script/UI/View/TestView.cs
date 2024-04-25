@@ -74,24 +74,31 @@ public class TestView : BaseView
         ConsoleUtils.Log(_slideValue.Get(), _input.Get());
     }
 
-    protected override void TweenIn()
+    [UIActionBind(UIAction.Hover,"6")]
+    private void ShowHint()
     {
-        main.x = -500;
-        AddTween(TweenTarget.X,500,2000,TweenEaseType.CircOut);
-        
-        main.y = 500;
-        AddTween(TweenTarget.Y,-500,2000,TweenEaseType.Linear);
-        
-        main.scaleX = 0.5f;
-        AddTween(TweenTarget.ScaleX,0.5f,2000,TweenEaseType.CircOut);
-        
-        AddTween(TweenTarget.Rotation,50,2000,TweenEaseType.CircOut);
+        ShowFloatView<HintView>("input_hint","HintView",true);
+        ConsoleUtils.Log("显示悬浮窗");
     }
 
-    protected override void LateOnShow()
-    {
-        ConsoleUtils.Log("缓动回调",Time.time);
-    }
+    // protected override void TweenIn()
+    // {
+    //     main.x = -500;
+    //     AddTween(TweenTarget.X,500,2000,TweenEaseType.CircOut);
+    //     
+    //     main.y = 500;
+    //     AddTween(TweenTarget.Y,-500,2000,TweenEaseType.Linear);
+    //     
+    //     main.scaleX = 0.5f;
+    //     AddTween(TweenTarget.ScaleX,0.5f,2000,TweenEaseType.CircOut);
+    //     
+    //     AddTween(TweenTarget.Rotation,50,2000,TweenEaseType.CircOut);
+    // }
+    //
+    // protected override void LateOnShow()
+    // {
+    //     ConsoleUtils.Log("缓动回调",Time.time);
+    // }
 
     // protected override void TweenOut()
     // {
