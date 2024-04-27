@@ -19,6 +19,9 @@ public class TestView : BaseView
 
     [UIDataBind(UIType.TextInput, "5")]
     private StringUIProp _input { get; set; }
+    
+    [UIDataBind(UIType.ComboBox,"8","1","b")]
+    private DoubleUIProp _comboBoxIndex { get; set; }
 
     [UICompBind(UIType.Loader, "3")]
     private GLoader _loader { get; set; }
@@ -45,6 +48,7 @@ public class TestView : BaseView
     private void OnBtnClick()
     {
         ConsoleUtils.Log("点击了按钮");
+        _comboBoxIndex.Set(1);
         EventManager.TriggerEvent("show_console", null);
     }
 
@@ -80,6 +84,19 @@ public class TestView : BaseView
         ShowFloatView<HintView>("input_hint","HintView",true);
         ConsoleUtils.Log("显示悬浮窗");
     }
+
+    [UIActionBind(UIAction.Slider,"4")]
+    private void OnSliderChanged()
+    {
+        ConsoleUtils.Log("滑动条",_slideValue.Get());
+    }
+    
+    [UIActionBind(UIAction.ComboBox,"8")]
+    private void OnComboBoxChanged()
+    {
+        ConsoleUtils.Log("下拉框",_comboBoxIndex.Get());
+    }
+
 
     // protected override void TweenIn()
     // {

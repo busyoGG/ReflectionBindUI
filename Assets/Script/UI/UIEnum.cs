@@ -6,7 +6,8 @@ public enum UIType
     Loader,
     List,
     Slider,
-    Image
+    Image,
+    ComboBox
 }
 
 public enum UIAction
@@ -19,7 +20,9 @@ public enum UIAction
     DragHold,
     DragEnd,
     Drop,
-    Hover
+    Hover,
+    Slider,
+    ComboBox
 }
 
 public enum TweenTarget

@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIBase
 {
@@ -104,6 +105,14 @@ public class UIBase
                 GList list = FguiUtils.GetUI<GList>(main, uiBind._path);
                 prop.SetValue(this, list);
                 break;
+            case UIType.Slider:
+                GSlider slider = FguiUtils.GetUI<GSlider>(main, uiBind._path);
+                prop.SetValue(this,slider);
+                break;
+            case UIType.ComboBox:
+                GComboBox comboBox = FguiUtils.GetUI<GComboBox>(main, uiBind._path);
+                prop.SetValue(this,comboBox);
+                break;
         }
     }
 
@@ -142,10 +151,7 @@ public class UIBase
 
                 void ActionText(string data)
                 {
-                    if (textField != null)
-                    {
-                        textField.text = data;
-                    }
+                    textField.text = data;
                 }
 
                 string ActionTextUI()
@@ -161,10 +167,7 @@ public class UIBase
 
                 void ActionInput(string data)
                 {
-                    if (textInput != null)
-                    {
-                        textInput.text = data;
-                    }
+                    textInput.text = data;
                 }
 
                 string ActionInputUI()
@@ -180,10 +183,7 @@ public class UIBase
 
                 void ActionImage(string data)
                 {
-                    if (image != null)
-                    {
-                        image.icon = data;
-                    }
+                    image.icon = data;
                 }
 
                 string ActionImageUI()
@@ -199,10 +199,7 @@ public class UIBase
 
                 void ActionLoader(string data)
                 {
-                    if (loader != null)
-                    {
-                        loader.url = data;
-                    }
+                    loader.url = data;
 
                     // ConsoleUtils.Log("�滻ͼƬ", loader?.url);
                 }
@@ -220,32 +217,29 @@ public class UIBase
 
                 void ActionList(int data)
                 {
-                    if (list != null)
+                    list.SetVirtual();
+                    list.numItems = data;
+
+                    if (uiBind._extra.Length > 0)
                     {
-                        list.SetVirtual();
-                        list.numItems = data;
-
-                        if (uiBind._extra.Length > 0)
+                        switch (uiBind._extra[0])
                         {
-                            switch (uiBind._extra[0])
-                            {
-                                case "height":
-                                    if (list.numChildren > 0)
-                                    {
-                                        list.height = data * list.GetChildAt(0).height + list.lineGap * (data - 1) +
-                                                      list.margin.top + list.margin.bottom;
-                                    }
+                            case "height":
+                                if (list.numChildren > 0)
+                                {
+                                    list.height = data * list.GetChildAt(0).height + list.lineGap * (data - 1) +
+                                                  list.margin.top + list.margin.bottom;
+                                }
 
-                                    break;
-                                case "width":
-                                    if (list.numChildren > 0)
-                                    {
-                                        list.width = data * list.GetChildAt(0).width + list.columnGap * (data - 1) +
-                                                     list.margin.left + list.margin.right;
-                                    }
+                                break;
+                            case "width":
+                                if (list.numChildren > 0)
+                                {
+                                    list.width = data * list.GetChildAt(0).width + list.columnGap * (data - 1) +
+                                                 list.margin.left + list.margin.right;
+                                }
 
-                                    break;
-                            }
+                                break;
                         }
                     }
                 }
@@ -257,10 +251,7 @@ public class UIBase
 
                 void ActionSlider(double data)
                 {
-                    if (slider != null)
-                    {
-                        slider.value = data;
-                    }
+                    slider.value = data;
                 }
 
                 double ActionSliderUI()
@@ -271,6 +262,25 @@ public class UIBase
                 onValueChange?.SetValue(value, (Action<double>)ActionSlider);
                 onUIChange?.SetValue(value, (Func<double>)ActionSliderUI);
                 break;
+            case UIType.ComboBox:
+                GComboBox comboBox = FguiUtils.GetUI<GComboBox>(main, uiBind._path);
+
+                comboBox.items = uiBind._extra;
+
+                void ActionComboBox(double data)
+                {
+                    comboBox.selectedIndex = (int)data;
+                }
+
+                double ActionComboBoxUI()
+                {
+                    return comboBox.selectedIndex;
+                }
+
+                onValueChange?.SetValue(value, (Action<double>)ActionComboBox);
+                onUIChange?.SetValue(value, (Func<double>)ActionComboBoxUI);
+
+                break;
         }
     }
 
@@ -280,6 +290,7 @@ public class UIBase
         GObject obj = FguiUtils.GetUI<GObject>(main, uiBind._path);
         ParameterInfo[] methodParamsListClick;
         bool isAgent;
+        Delegate action;
 
         switch (uiBind._type)
         {
@@ -288,36 +299,35 @@ public class UIBase
                 Delegate click;
                 if (methodParamsClick.Length == 0)
                 {
-                    click = Delegate.CreateDelegate(typeof(EventCallback0), this, method);
-                    obj.onClick.Set((EventCallback0)click);
+                    action = Delegate.CreateDelegate(typeof(EventCallback0), this, method);
+                    obj.onClick.Set((EventCallback0)action);
                 }
                 else
                 {
-                    click = Delegate.CreateDelegate(typeof(EventCallback1), this, method);
-                    obj.onClick.Set((EventCallback1)click);
+                    action = Delegate.CreateDelegate(typeof(EventCallback1), this, method);
+                    obj.onClick.Set((EventCallback1)action);
                 }
 
                 break;
             case UIAction.ListRender:
-                var render = Delegate.CreateDelegate(typeof(ListItemRenderer), this, method);
-                obj.asList.itemRenderer = (ListItemRenderer)render;
+                action = Delegate.CreateDelegate(typeof(ListItemRenderer), this, method);
+                obj.asList.itemRenderer = (ListItemRenderer)action;
                 break;
             case UIAction.ListProvider:
-                var provider = Delegate.CreateDelegate(typeof(ListItemProvider), this, method);
-                obj.asList.itemProvider = (ListItemProvider)provider;
+                action = Delegate.CreateDelegate(typeof(ListItemProvider), this, method);
+                obj.asList.itemProvider = (ListItemProvider)action;
                 break;
             case UIAction.ListClick:
                 methodParamsListClick = method.GetParameters();
-                Delegate listClick;
                 if (methodParamsListClick.Length == 0)
                 {
-                    listClick = Delegate.CreateDelegate(typeof(EventCallback0), this, method);
-                    obj.asList.onClickItem.Set((EventCallback0)listClick);
+                    action = Delegate.CreateDelegate(typeof(EventCallback0), this, method);
+                    obj.asList.onClickItem.Set((EventCallback0)action);
                 }
                 else
                 {
-                    listClick = Delegate.CreateDelegate(typeof(EventCallback1), this, method);
-                    obj.asList.onClickItem.Set((EventCallback1)listClick);
+                    action = Delegate.CreateDelegate(typeof(EventCallback1), this, method);
+                    obj.asList.onClickItem.Set((EventCallback1)action);
                 }
 
                 break;
@@ -337,22 +347,21 @@ public class UIBase
                 SetDragListener(obj, 2, method, isAgent);
                 break;
             case UIAction.Drop:
-                Action<object> drop = (Action<object>)Delegate.CreateDelegate(typeof(Action<object>), this, method);
+                action = (Action<object>)Delegate.CreateDelegate(typeof(Action<object>), this, method);
                 _dropDic[obj.id] = true;
-                EventManager.AddListening(obj.id, "OnDrop_" + obj.id, data => drop.Invoke(data));
+                EventManager.AddListening(obj.id, "OnDrop_" + obj.id, data => ((Action<object>)action).Invoke(data));
                 break;
             case UIAction.Hover:
                 methodParamsListClick = method.GetParameters();
-                Delegate hover;
                 if (methodParamsListClick.Length == 0)
                 {
-                    hover = Delegate.CreateDelegate(typeof(EventCallback0), this, method);
-                    obj.onRollOver.Set((EventCallback0)hover);
+                    action = Delegate.CreateDelegate(typeof(EventCallback0), this, method);
+                    obj.onRollOver.Set((EventCallback0)action);
                 }
                 else
                 {
-                    hover = Delegate.CreateDelegate(typeof(EventCallback1), this, method);
-                    obj.onRollOver.Set((EventCallback1)hover);
+                    action = Delegate.CreateDelegate(typeof(EventCallback1), this, method);
+                    obj.onRollOver.Set((EventCallback1)action);
                 }
 
                 obj.onRollOver.Add(() =>
@@ -378,6 +387,33 @@ public class UIBase
                     _floatViewOnShow?.Hide();
                     _floatViewOnShow = null;
                 });
+                break;
+            case UIAction.Slider:
+                methodParamsListClick = method.GetParameters();
+                if (methodParamsListClick.Length == 0)
+                {
+                    action = Delegate.CreateDelegate(typeof(EventCallback0), this, method);
+                    obj.asSlider.onChanged.Set((EventCallback0)action);
+                }
+                else
+                {
+                    action = Delegate.CreateDelegate(typeof(EventCallback1), this, method);
+                    obj.asSlider.onChanged.Set((EventCallback1)action);
+                }
+
+                break;
+            case UIAction.ComboBox:
+                methodParamsListClick = method.GetParameters();
+                if (methodParamsListClick.Length == 0)
+                {
+                    action = Delegate.CreateDelegate(typeof(EventCallback0), this, method);
+                    obj.asComboBox.onChanged.Set((EventCallback0)action);
+                }
+                else
+                {
+                    action = Delegate.CreateDelegate(typeof(EventCallback1), this, method);
+                    obj.asComboBox.onChanged.Set((EventCallback1)action);
+                }
                 break;
         }
     }
@@ -471,12 +507,12 @@ public class UIBase
             if (follow)
             {
                 UIFollow uiFollow = view.main.displayObject.gameObject.AddComponent<UIFollow>();
-                uiFollow.SetObj(view.main,main);
+                uiFollow.SetObj(view.main, main);
             }
 
             main.AddChild(view.main);
             view.OnAwake();
-            _floatViews.Add(name,view);
+            _floatViews.Add(name, view);
         }
 
         _floatViewOnShow = view;

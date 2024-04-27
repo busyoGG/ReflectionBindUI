@@ -8,6 +8,9 @@
     <component id="kvxz4" name="Slider_grip.xml" path="/"/>
     <component id="kvxz5" name="Slider.xml" path="/" exported="true"/>
     <component id="rr3b6" name="HintView.xml" path="/" exported="true"/>
+    <component id="syc87" name="ComboBox_item.xml" path="/" exported="true"/>
+    <component id="syc88" name="ComboBox_popup.xml" path="/"/>
+    <component id="syc89" name="ComboBox.xml" path="/" exported="true"/>
   </resources>
   <publish name=""/>
 </packageDescription>
