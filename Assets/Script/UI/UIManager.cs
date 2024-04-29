@@ -14,9 +14,19 @@ public class UIManager : Singleton<UIManager>
         _root = new UINode();
     }
 
+    /// <summary>
+    /// 展示UI
+    /// </summary>
+    /// <param name="folder"></param>
+    /// <param name="package"></param>
+    /// <param name="uiName"></param>
+    /// <param name="parent"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
     public UINode ShowUI<T>(string folder, string package, string uiName, UINode parent = null)
         where T : BaseView, new()
     {
+        //包加载逻辑暂时加载Resources文件夹内文件 如有需要可自行修改
         string packagePath = folder + "/" + package;
         UIPackage.AddPackage(packagePath);
         //创建UI
@@ -70,6 +80,10 @@ public class UIManager : Singleton<UIManager>
         return ui;
     }
 
+    /// <summary>
+    /// 隐藏UI
+    /// </summary>
+    /// <param name="ui"></param>
     public void HideUI(UINode ui)
     {
         foreach (var child in ui.children)
@@ -81,6 +95,12 @@ public class UIManager : Singleton<UIManager>
         ui.ui.Hide();
     }
 
+    /// <summary>
+    /// 根据名字获取UI
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="parent"></param>
+    /// <returns></returns>
     public UINode GetUI(string name, UINode parent = null)
     {
         if (parent == null)
