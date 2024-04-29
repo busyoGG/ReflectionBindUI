@@ -4,29 +4,34 @@ using FairyGUI;
 
 public class UIManager : Singleton<UIManager>
 {
-    private UINode _root;
+    private UINode _root = new UINode();
 
     private int _id = 0;
 
     private List<GComponent> _layer = new List<GComponent>();
 
-    public void Init()
-    {
-        _root = new UINode();
-    }
+    private Dictionary<string, UINode> _savedView = new Dictionary<string, UINode>();
 
     /// <summary>
     /// 展示UI
     /// </summary>
     /// <param name="folder"></param>
     /// <param name="package"></param>
-    /// <param name="uiName"></param>
+    /// <param name="name"></param>
     /// <param name="parent"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
     public UINode ShowUI<T>(string folder, string package, string name, UINode parent = null)
         where T : BaseView, new()
     {
+        //有保存的UI直接展示并返回
+        if (_savedView.TryGetValue(name, out var node))
+        {
+            node.ui.Show();
+            return node;
+        }
+        
+        //创建没保存的UI
         Type type = typeof(T);
         //包加载逻辑暂时加载Resources文件夹内文件 如有需要可自行修改
         string packagePath = folder + "/" + package;
@@ -36,7 +41,7 @@ public class UIManager : Singleton<UIManager>
         view.id = "ui_" + _id++;
         view.name = name;
         view.main = UIPackage.CreateObject(package, type.Name).asCom;
-        
+
         //创建UI节点
         UINode ui = new UINode();
         ui.ui = view;
@@ -53,7 +58,7 @@ public class UIManager : Singleton<UIManager>
             }
 
             _layer[layerIndex].AddChild(view.main);
-            
+
             parent.children.Add(view.id, ui);
             ui.parent = parent;
             ui.layer = layerIndex;
@@ -76,10 +81,11 @@ public class UIManager : Singleton<UIManager>
         }
 
         view.uiNode = ui;
-        
+
+        view.InitConfig();
         view.OnAwake();
         view.Show();
-        
+
         return ui;
     }
 
@@ -117,7 +123,7 @@ public class UIManager : Singleton<UIManager>
         }
 
         UINode node;
-        
+
         foreach (var child in parent.children)
         {
             node = GetUI(name, child.Value);
@@ -142,6 +148,8 @@ public class UIManager : Singleton<UIManager>
             DisposeUI(uiChild);
         }
 
+        //移除保存的节点
+        _savedView.Remove(ui.ui.name);
         ui.children = null;
         ui.parent = null;
         ui.ui.Dispose();
@@ -161,10 +169,20 @@ public class UIManager : Singleton<UIManager>
     /// </summary>
     /// <param name="ui"></param>
     /// <param name="model"></param>
-    public void SetModel(UINode ui,GGraph model)
+    public void SetModel(UINode ui, GGraph model)
     {
         GComponent layer = _layer[ui.layer];
         int index = layer.GetChildIndex(ui.ui.main);
         layer.AddChildAt(model, index);
+    }
+
+    /// <summary>
+    /// 保存节点 需要ui名称唯一
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="ui"></param>
+    public void SaveNode(string name, UINode ui)
+    {
+        _savedView[name] = ui;
     }
 }

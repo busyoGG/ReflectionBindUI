@@ -18,7 +18,6 @@ public class Launcher : MonoBehaviour
     private void Awake()
     {
         UITweenManager.Ins().Init();
-        UIManager.Ins().Init();
     }
 
     // Start is called before the first frame update

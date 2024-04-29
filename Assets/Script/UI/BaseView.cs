@@ -12,10 +12,21 @@ public class BaseView : UIBase
     private GGraph _model;
 
     /// <summary>
+    /// 是否保存节点 默认保存
+    /// </summary>
+    private bool _isSaveNode = true;
+
+    /// <summary>
     /// 只在创建的时候执行
     /// </summary>
     public void OnAwake()
     {
+        if (_isSaveNode)
+        {
+            //保存节点
+            UIManager.Ins().SaveNode(name, uiNode);
+        }
+
         Bind();
 
         var classAttributes = _type.GetCustomAttributes();
@@ -31,14 +42,12 @@ public class BaseView : UIBase
 
     public void Show()
     {
-        OnShow();
         TweenIn();
         DoTween(true);
     }
 
     public void Hide()
     {
-        OnHide();
         TweenOut();
         DoTween(false);
     }
@@ -89,15 +98,6 @@ public class BaseView : UIBase
     {
     }
 
-
-    protected virtual void LateOnShow()
-    {
-    }
-
-    protected virtual void LateOnHide()
-    {
-    }
-
     protected virtual void TweenIn()
     {
     }
@@ -106,19 +106,23 @@ public class BaseView : UIBase
     {
     }
 
+    public virtual void InitConfig()
+    {
+    }
+
     private void DoTween(bool start)
     {
         if (start)
         {
             SetVisible(true);
-            AddTween(TweenTarget.None, 0, _duration, TweenEaseType.Linear, LateOnShow);
+            AddTween(TweenTarget.None, 0, _duration, TweenEaseType.Linear, OnShow);
         }
         else
         {
             AddTween(TweenTarget.None, 0, _duration, TweenEaseType.Linear, () =>
             {
                 main.visible = false;
-                LateOnHide();
+                OnHide();
             });
         }
     }
@@ -137,7 +141,7 @@ public class BaseView : UIBase
                 if (_model == null)
                 {
                     _model = new GGraph();
-                    _model.displayObject.gameObject.name = id + "_" + name + "_Model"; 
+                    _model.displayObject.gameObject.name = id + "_" + name + "_Model";
 
                     UIColor colorAttr = _type.GetCustomAttribute<UIColor>();
                     Color color = new Color(0, 0, 0, 0);
@@ -150,7 +154,7 @@ public class BaseView : UIBase
                     _model.DrawRect(size.x, size.y, 0, new Color(), color);
                 }
 
-                UIManager.Ins().SetModel(uiNode,_model);
+                UIManager.Ins().SetModel(uiNode, _model);
 
                 _model.onClick.Set(() =>
                 {
@@ -202,25 +206,19 @@ public class BaseView : UIBase
 
                         isOut = true;
                     });
-                    
+
                     if (retop)
                     {
-                        obj.onTouchBegin.Add(() =>
-                        {
-                            UIManager.Ins().ResetTop(uiNode);
-                        });
+                        obj.onTouchBegin.Add(() => { UIManager.Ins().ResetTop(uiNode); });
                     }
                 }
                 else
                 {
                     main.draggable = true;
-                
+
                     if (retop)
                     {
-                        main.onTouchBegin.Set(() =>
-                        {
-                            UIManager.Ins().ResetTop(uiNode);
-                        });
+                        main.onTouchBegin.Set(() => { UIManager.Ins().ResetTop(uiNode); });
                     }
                 }
 

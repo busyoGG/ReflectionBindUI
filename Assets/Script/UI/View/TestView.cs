@@ -120,10 +120,15 @@ public class TestView : BaseView
     //     AddTween(TweenTarget.Rotation,50,2000,TweenEaseType.CircOut);
     // }
     //
-    // protected override void LateOnShow()
-    // {
-    //     ConsoleUtils.Log("»º¶¯»Øµ÷",Time.time);
-    // }
+    protected override void OnShow()
+    {
+        ConsoleUtils.Log("OnShow",Time.time);
+    }
+
+    protected override void OnHide()
+    {
+        ConsoleUtils.Log("OnHide");
+    }
 
     // protected override void TweenOut()
     // {
