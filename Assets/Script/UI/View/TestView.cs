@@ -102,6 +102,7 @@ public class TestView : BaseView
     private void Close()
     {
         UIManager.Ins().HideUI(uiNode);
+        // UIManager.Ins().DisposeUI(uiNode);
     }
 
 

@@ -43,6 +43,14 @@ public class BaseView : UIBase
         DoTween(false);
     }
 
+    /// <summary>
+    /// Ïú»Ù
+    /// </summary>
+    public void Dispose()
+    {
+        main.Dispose();
+    }
+
     public bool GetVisible()
     {
         return main.visible;

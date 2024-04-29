@@ -129,6 +129,23 @@ public class UIManager : Singleton<UIManager>
     }
 
     /// <summary>
+    /// 销毁UI
+    /// </summary>
+    /// <param name="ui"></param>
+    public void DisposeUI(UINode ui)
+    {
+        foreach (var child in ui.children)
+        {
+            UINode uiChild = child.Value;
+            DisposeUI(uiChild);
+        }
+
+        ui.children = null;
+        ui.parent = null;
+        ui.ui.Dispose();
+    }
+
+    /// <summary>
     /// 重新置于上层
     /// </summary>
     /// <param name="ui"></param>
