@@ -163,7 +163,7 @@ public class BaseView : UIBase
 
                 break;
             case UIClass.Drag:
-                bool retop = uiClassBind.extra[0] == "Retop";
+                bool retop = uiClassBind.extra.Length > 0 && uiClassBind.extra[0] == "Retop";
                 if (uiClassBind.extra.Length > 1)
                 {
                     GObject obj = FguiUtils.GetUI<GObject>(main, uiClassBind.extra[1]);
