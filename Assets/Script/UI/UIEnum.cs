@@ -40,3 +40,9 @@ public enum TweenTarget
     Heihgt,
     Width
 }
+
+public enum UIClass
+{
+    Model,
+    Drag
+}

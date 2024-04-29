@@ -18,6 +18,7 @@ public class Launcher : MonoBehaviour
     private void Awake()
     {
         UITweenManager.Ins().Init();
+        UIManager.Ins().Init();
     }
 
     // Start is called before the first frame update
@@ -25,16 +26,9 @@ public class Launcher : MonoBehaviour
     {
         
         _leftMouseState = UIMouseState.Up;
-        
-        UIPackage.AddPackage("FGUI/Test");
-        TestView testView = new TestView();
-        testView.id = "ui_0";
-        testView.main = UIPackage.CreateObject("Test","TestView").asCom;
-        GRoot.inst.AddChild(testView.main);
 
-        testView.OnAwake();
-        testView.Show();
-        // testView.Hide();
+        UINode first = UIManager.Ins().ShowUI<TestView>("FGUI", "Test", "TestView");
+        UIManager.Ins().ShowUI<TestView>("FGUI", "Test", "TestView",first);
     }
 
     private void OnGUI()

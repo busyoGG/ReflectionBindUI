@@ -1,20 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="800,600">
+<component size="700,500">
   <displayList>
-    <text id="n0_k4sd" name="n0" xy="28,17" size="256,19" fontSize="12" autoSize="none" text="输入文本 ↓"/>
+    <graph id="n9_tx2s" name="n9" xy="0,0" size="700,500" type="rect" lineSize="3" fillColor="#00ffffff">
+      <relation target="" sidePair="width-width,height-height"/>
+    </graph>
+    <text id="n0_k4sd" name="n0" xy="25,65" size="256,19" fontSize="12" autoSize="none" text="输入文本 ↓"/>
     <list id="n1_k4sd" name="n1" xy="24,137" size="200,300" overflow="scroll" defaultItem="ui://5bl7a94uk4sd2">
       <item/>
     </list>
-    <component id="n2_k4sd" name="n2" src="k4sd1" fileName="Btn.xml" xy="329,17" size="145,43"/>
+    <component id="n2_k4sd" name="n2" src="k4sd1" fileName="Btn.xml" xy="317,56" size="145,43"/>
     <loader id="n3_k4sd" name="n3" xy="318,110" size="144,139" align="center" vAlign="middle" fill="scale" autoSize="true"/>
-    <component id="n4_kvxz" name="n4" src="kvxz5" fileName="Slider.xml" xy="304,321">
+    <component id="n4_kvxz" name="n4" src="kvxz5" fileName="Slider.xml" xy="303,344">
       <Slider value="50" max="100"/>
     </component>
-    <text id="n5_kvxz" name="n5" xy="28,47" size="256,25" fontSize="12" autoSize="none" text="" input="true"/>
+    <text id="n5_kvxz" name="n5" xy="25,95" size="256,25" fontSize="12" autoSize="none" text="" input="true"/>
     <graph id="n6_rr3b" name="n6" xy="305,367" size="64,30" type="rect"/>
     <text id="n7_rr3b" name="n7" xy="322,373" size="28,19" fontSize="12" autoSize="none" text="提示"/>
-    <component id="n8_syc8" name="n8" src="syc89" fileName="ComboBox.xml" xy="532,40">
+    <component id="n8_syc8" name="n8" src="syc89" fileName="ComboBox.xml" xy="491,59">
       <ComboBox visibleItemCount="10"/>
     </component>
+    <graph id="n10_tx2s" name="n10" xy="3,3" size="694,30" type="rect"/>
+    <graph id="n11_tx2s" name="n11" xy="659,41" size="31,30" type="rect"/>
+    <text id="n12_tx2s" name="n12" xy="668,47" size="11,19" fontSize="12" text="X"/>
   </displayList>
 </component>

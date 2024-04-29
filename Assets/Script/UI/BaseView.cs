@@ -1,9 +1,15 @@
 using System;
+using System.Reflection;
+using FairyGUI;
 using UnityEngine;
 
 public class BaseView : UIBase
 {
+    public UINode uiNode;
+
     private int _duration;
+
+    private GGraph _model;
 
     /// <summary>
     /// 只在创建的时候执行
@@ -11,6 +17,16 @@ public class BaseView : UIBase
     public void OnAwake()
     {
         Bind();
+
+        var classAttributes = _type.GetCustomAttributes();
+
+        foreach (var attr in classAttributes)
+        {
+            if (attr is UIClassBind)
+            {
+                BindClass(attr);
+            }
+        }
     }
 
     public void Show()
@@ -87,15 +103,103 @@ public class BaseView : UIBase
         if (start)
         {
             SetVisible(true);
-            AddTween(TweenTarget.None,0,_duration,TweenEaseType.Linear,LateOnShow);
+            AddTween(TweenTarget.None, 0, _duration, TweenEaseType.Linear, LateOnShow);
         }
         else
         {
-            AddTween(TweenTarget.None,0,_duration,TweenEaseType.Linear, () =>
+            AddTween(TweenTarget.None, 0, _duration, TweenEaseType.Linear, () =>
             {
                 main.visible = false;
                 LateOnHide();
             });
+        }
+    }
+
+    /// <summary>
+    /// 绑定 类
+    /// </summary>
+    /// <param name="attr"></param>
+    private void BindClass(object attr)
+    {
+        UIClassBind uiClassBind = (UIClassBind)attr;
+
+        switch (uiClassBind.type)
+        {
+            case UIClass.Model:
+                if (_model == null)
+                {
+                    _model = new GGraph();
+
+                    UIColor colorAttr = _type.GetCustomAttribute<UIColor>();
+                    Color color = new Color(0, 0, 0, 0);
+                    if (colorAttr != null)
+                    {
+                        color = colorAttr.color;
+                    }
+
+                    Vector2 size = GRoot.inst.size;
+                    _model.DrawRect(size.x, size.y, 0, new Color(), color);
+                }
+
+                int index = GRoot.inst.GetChildIndex(main);
+                GRoot.inst.AddChildAt(_model, index);
+
+                _model.onClick.Set(() =>
+                {
+                    if (uiClassBind.extra.Length > 0 && uiClassBind.extra[0] == "hide")
+                    {
+                        Hide();
+                        main.AddChild(_model);
+                    }
+                });
+
+                break;
+            case UIClass.Drag:
+                if (uiClassBind.extra.Length > 0)
+                {
+                    GObject obj = FguiUtils.GetUI<GObject>(main, uiClassBind.extra[0]);
+                    obj.draggable = true;
+                    bool isTouch = false;
+                    bool isOut = true;
+
+                    obj.onTouchBegin.Set(() =>
+                    {
+                        main.draggable = true;
+                        isTouch = true;
+                    });
+
+                    obj.onTouchEnd.Set(() =>
+                    {
+                        if (isOut)
+                        {
+                            main.draggable = false;
+                        }
+
+                        isTouch = false;
+                    });
+
+                    obj.onRollOver.Set(() =>
+                    {
+                        main.draggable = true;
+                        isOut = false;
+                    });
+
+                    obj.onRollOut.Set(() =>
+                    {
+                        if (!isTouch)
+                        {
+                            main.draggable = false;
+                        }
+
+                        isOut = true;
+                    });
+                }
+                else
+                {
+                    main.draggable = true;
+                }
+
+                break;
         }
     }
 }

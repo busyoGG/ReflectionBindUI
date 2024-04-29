@@ -12,6 +12,8 @@ public class UIBase
     public string id;
     public string name;
 
+    protected Type _type;
+
     private readonly BindingFlags _flag = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static |
                                           BindingFlags.Instance;
 
@@ -36,11 +38,11 @@ public class UIBase
 
     protected void Bind()
     {
-        Type type = GetType();
-        PropertyInfo[] props = type.GetProperties(_flag);
+        _type = GetType();
+        PropertyInfo[] props = _type.GetProperties(_flag);
         // GComponent main = (GComponent)type.GetField("main", flag).GetValue(this);
 
-        MethodInfo[] methods = type.GetMethods(_flag);
+        MethodInfo[] methods = _type.GetMethods(_flag);
 
         foreach (var method in methods)
         {
@@ -75,6 +77,11 @@ public class UIBase
         }
     }
 
+    /// <summary>
+    /// 绑定组件
+    /// </summary>
+    /// <param name="prop"></param>
+    /// <param name="attr"></param>
     private void BindComp(PropertyInfo prop, object attr)
     {
         UICompBind uiBind = (UICompBind)attr;
@@ -116,6 +123,11 @@ public class UIBase
         }
     }
 
+    /// <summary>
+    /// 绑定 组件-数据
+    /// </summary>
+    /// <param name="prop"></param>
+    /// <param name="attr"></param>
     private void BindData(PropertyInfo prop, object attr)
     {
         UIDataBind uiBind = (UIDataBind)attr;
@@ -284,6 +296,11 @@ public class UIBase
         }
     }
 
+    /// <summary>
+    /// 绑定 组件-行为
+    /// </summary>
+    /// <param name="method"></param>
+    /// <param name="attr"></param>
     private void BindAction(MethodInfo method, object attr)
     {
         UIActionBind uiBind = (UIActionBind)attr;
@@ -418,12 +435,18 @@ public class UIBase
         }
     }
 
+    /// <summary>
+    /// 绑定监听
+    /// </summary>
+    /// <param name="method"></param>
+    /// <param name="attr"></param>
     private void BindListener(MethodInfo method, object attr)
     {
         UIListenerBind uiBind = (UIListenerBind)attr;
         var eventFunc = Delegate.CreateDelegate(typeof(Action<ArrayList>), this, method);
         EventManager.AddListening(id, uiBind._name, (Action<ArrayList>)eventFunc);
     }
+
 
     private void ClearDropData()
     {

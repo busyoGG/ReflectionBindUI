@@ -3,31 +3,32 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[UIClassBind(UIClass.Drag,"n10"),UIColor(1,1,1,0.5f)]
 public class TestView : BaseView
 {
-    [UIDataBind(UIType.TextField, "0")]
+    [UIDataBind(UIType.TextField, "1")]
     private StringUIProp _testText { get; set; }
 
     [UIDataBind(UIType.List, "n1")]
     private UIListProp<string> _testList { get; set; }
 
-    [UIDataBind(UIType.Loader, "3")]
+    [UIDataBind(UIType.Loader, "4")]
     private StringUIProp _loaderUrl { get; set; }
 
-    [UIDataBind(UIType.Slider, "4")]
+    [UIDataBind(UIType.Slider, "5")]
     private DoubleUIProp _slideValue { get; set; }
 
-    [UIDataBind(UIType.TextInput, "5")]
+    [UIDataBind(UIType.TextInput, "6")]
     private StringUIProp _input { get; set; }
     
-    [UIDataBind(UIType.ComboBox,"8","1","b")]
+    [UIDataBind(UIType.ComboBox,"9","1","b")]
     private DoubleUIProp _comboBoxIndex { get; set; }
 
-    [UICompBind(UIType.Loader, "3")]
+    [UICompBind(UIType.Loader, "4")]
     private GLoader _loader { get; set; }
 
 
-    [UIActionBind(UIAction.ListRender, "1")]
+    [UIActionBind(UIAction.ListRender, "2")]
     private void ItemRenderer(int index, GObject item)
     {
         GComponent comp = item as GComponent;
@@ -44,7 +45,7 @@ public class TestView : BaseView
         SetDrop(comp, (object data) => { ConsoleUtils.Log("放置", data); });
     }
 
-    [UIActionBind(UIAction.Click, "2")]
+    [UIActionBind(UIAction.Click, "3")]
     private void OnBtnClick()
     {
         ConsoleUtils.Log("点击了按钮");
@@ -52,7 +53,7 @@ public class TestView : BaseView
         EventManager.TriggerEvent("show_console", null);
     }
 
-    [UIActionBind(UIAction.DragEnd, "2", "Self")]
+    [UIActionBind(UIAction.DragEnd, "3", "Self")]
     private void OnDrag(EventContext context)
     {
         //添加拖拽数据
@@ -61,7 +62,7 @@ public class TestView : BaseView
         Debug.Log(GRoot.inst.touchTarget);
     }
 
-    [UIActionBind(UIAction.Drop, "3")]
+    [UIActionBind(UIAction.Drop, "4")]
     private void OnDrop(object data)
     {
         ConsoleUtils.Log("拖拽放置", data);
@@ -78,23 +79,29 @@ public class TestView : BaseView
         ConsoleUtils.Log(_slideValue.Get(), _input.Get());
     }
 
-    [UIActionBind(UIAction.Hover,"6")]
+    [UIActionBind(UIAction.Hover,"7")]
     private void ShowHint()
     {
         ShowFloatView<HintView>("input_hint","HintView",true);
-        ConsoleUtils.Log("显示悬浮窗");
+        // ConsoleUtils.Log("显示悬浮窗");
     }
 
-    [UIActionBind(UIAction.Slider,"4")]
+    [UIActionBind(UIAction.Slider,"5")]
     private void OnSliderChanged()
     {
         ConsoleUtils.Log("滑动条",_slideValue.Get());
     }
     
-    [UIActionBind(UIAction.ComboBox,"8")]
+    [UIActionBind(UIAction.ComboBox,"9")]
     private void OnComboBoxChanged()
     {
         ConsoleUtils.Log("下拉框",_comboBoxIndex.Get());
+    }
+
+    [UIActionBind(UIAction.Click,"n11")]
+    private void Close()
+    {
+        UIManager.Ins().HideUI(uiNode);
     }
 
 
