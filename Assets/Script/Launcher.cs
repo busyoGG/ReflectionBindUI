@@ -29,6 +29,8 @@ public class Launcher : MonoBehaviour
 
         UINode first = UIManager.Ins().ShowUI<TestView>("FGUI", "Test", "TestView","TestView0");
         UIManager.Ins().ShowUI<TestView>("FGUI", "Test", "TestView","TestView1");
+        
+        ConsoleUtils.Log("≤È’“UI",UIManager.Ins().GetUI("TestView0"));
     }
 
     private void OnGUI()

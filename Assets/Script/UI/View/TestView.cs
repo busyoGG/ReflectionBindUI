@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[UIClassBind(UIClass.Model,"Hide"),UIColor(1,1,1,0.5f)]
+[UIClassBind(UIClass.Drag,"Retop","n10"),UIColor(1,1,1,0.5f)]
 public class TestView : BaseView
 {
     [UIDataBind(UIType.TextField, "1")]

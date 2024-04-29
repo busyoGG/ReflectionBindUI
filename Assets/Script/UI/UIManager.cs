@@ -109,14 +109,20 @@ public class UIManager : Singleton<UIManager>
             parent = _root;
         }
 
-        if (name == parent.ui.name)
+        if (parent.ui != null && name == parent.ui.name)
         {
             return parent;
         }
 
+        UINode node;
+        
         foreach (var child in parent.children)
         {
-            GetUI(name, child.Value);
+            node = GetUI(name, child.Value);
+            if (node != null)
+            {
+                return node;
+            }
         }
 
         return null;
