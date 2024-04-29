@@ -142,12 +142,11 @@ public class BaseView : UIBase
                     _model.DrawRect(size.x, size.y, 0, new Color(), color);
                 }
 
-                int index = GRoot.inst.GetChildIndex(main);
-                GRoot.inst.AddChildAt(_model, index);
+                UIManager.Ins().SetModel(uiNode,_model);
 
                 _model.onClick.Set(() =>
                 {
-                    if (uiClassBind.extra.Length > 0 && uiClassBind.extra[0] == "hide")
+                    if (uiClassBind.extra.Length > 0 && uiClassBind.extra[0] == "Hide")
                     {
                         Hide();
                         main.AddChild(_model);

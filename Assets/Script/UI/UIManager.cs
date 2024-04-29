@@ -33,10 +33,7 @@ public class UIManager : Singleton<UIManager>
         T view = new T();
         view.id = "ui_" + _id++;
         view.main = UIPackage.CreateObject(package, uiName).asCom;
-
-        view.OnAwake();
-        view.Show();
-
+        
         //创建UI节点
         UINode ui = new UINode();
         ui.ui = view;
@@ -76,7 +73,10 @@ public class UIManager : Singleton<UIManager>
         }
 
         view.uiNode = ui;
-
+        
+        view.OnAwake();
+        view.Show();
+        
         return ui;
     }
 
@@ -128,5 +128,17 @@ public class UIManager : Singleton<UIManager>
     public void ResetTop(UINode ui)
     {
         _layer[ui.layer].AddChild(ui.ui.main);
+    }
+
+    /// <summary>
+    /// 设置模态背景
+    /// </summary>
+    /// <param name="ui"></param>
+    /// <param name="model"></param>
+    public void SetModel(UINode ui,GGraph model)
+    {
+        GComponent layer = _layer[ui.layer];
+        int index = layer.GetChildIndex(ui.ui.main);
+        layer.AddChildAt(model, index);
     }
 }
