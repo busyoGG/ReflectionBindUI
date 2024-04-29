@@ -15,10 +15,10 @@ public class UIManager : Singleton<UIManager>
     /// <summary>
     /// 展示UI
     /// </summary>
-    /// <param name="folder"></param>
-    /// <param name="package"></param>
-    /// <param name="name"></param>
-    /// <param name="parent"></param>
+    /// <param name="folder">UI所在文件夹</param>
+    /// <param name="package">UI包名</param>
+    /// <param name="name">自定义名称</param>
+    /// <param name="parent">父节点</param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
     public UINode ShowUI<T>(string folder, string package, string name, UINode parent = null)
@@ -92,7 +92,7 @@ public class UIManager : Singleton<UIManager>
     /// <summary>
     /// 隐藏UI
     /// </summary>
-    /// <param name="ui"></param>
+    /// <param name="ui">UI节点</param>
     public void HideUI(UINode ui)
     {
         foreach (var child in ui.children)
@@ -107,8 +107,8 @@ public class UIManager : Singleton<UIManager>
     /// <summary>
     /// 根据名字获取UI
     /// </summary>
-    /// <param name="name"></param>
-    /// <param name="parent"></param>
+    /// <param name="name">自定义名称</param>
+    /// <param name="parent">父节点</param>
     /// <returns></returns>
     public UINode GetUI(string name, UINode parent = null)
     {
@@ -139,7 +139,7 @@ public class UIManager : Singleton<UIManager>
     /// <summary>
     /// 销毁UI
     /// </summary>
-    /// <param name="ui"></param>
+    /// <param name="ui">UI节点</param>
     public void DisposeUI(UINode ui)
     {
         foreach (var child in ui.children)
@@ -158,7 +158,7 @@ public class UIManager : Singleton<UIManager>
     /// <summary>
     /// 重新置于上层
     /// </summary>
-    /// <param name="ui"></param>
+    /// <param name="ui">UI节点</param>
     public void ResetTop(UINode ui)
     {
         _layer[ui.layer].AddChild(ui.ui.main);
@@ -167,8 +167,8 @@ public class UIManager : Singleton<UIManager>
     /// <summary>
     /// 设置模态背景
     /// </summary>
-    /// <param name="ui"></param>
-    /// <param name="model"></param>
+    /// <param name="ui">UI节点</param>
+    /// <param name="model">模态背景对象</param>
     public void SetModel(UINode ui, GGraph model)
     {
         GComponent layer = _layer[ui.layer];
@@ -179,8 +179,8 @@ public class UIManager : Singleton<UIManager>
     /// <summary>
     /// 保存节点 需要ui名称唯一
     /// </summary>
-    /// <param name="name"></param>
-    /// <param name="ui"></param>
+    /// <param name="name">自定义名称</param>
+    /// <param name="ui">UI节点</param>
     public void SaveNode(string name, UINode ui)
     {
         _savedView[name] = ui;

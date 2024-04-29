@@ -5,29 +5,65 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
+/// <summary>
+/// UI内部元素基类
+/// </summary>
 public class UIBase
 {
+    /// <summary>
+    /// 界面UI根元素
+    /// </summary>
     public GComponent main;
+    /// <summary>
+    /// 界面id
+    /// </summary>
     public string id;
+    /// <summary>
+    /// 界面名
+    /// </summary>
     public string name;
 
+    /// <summary>
+    /// 当前类的类型
+    /// </summary>
     protected Type _type;
 
+    /// <summary>
+    /// 反射范围标志
+    /// </summary>
     private readonly BindingFlags _flag = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static |
                                           BindingFlags.Instance;
 
     //----- 内建私有变量 -----
 
+    /// <summary>
+    /// 拖拽元素字典，用于保存元素的拖拽状态
+    /// </summary>
     private readonly Dictionary<string, bool> _dropDic = new Dictionary<string, bool>();
 
+    /// <summary>
+    /// 代理拖拽元素
+    /// </summary>
     private GameObject _copy;
 
+    /// <summary>
+    /// 当前代理拖拽脚本
+    /// </summary>
     private UIDrag _uiDrag;
 
+    /// <summary>
+    /// 拖拽数据
+    /// </summary>
     private readonly ArrayList _dropData = new ArrayList();
 
+    /// <summary>
+    /// 浮动窗口id
+    /// </summary>
     private int _floatId = 0;
 
+    /// <summary>
+    /// 浮动窗口字典，用于保存所有浮动窗口
+    /// </summary>
     private Dictionary<string, BaseView> _floatViews = new Dictionary<string, BaseView>();
 
     /// <summary>
@@ -39,7 +75,6 @@ public class UIBase
     {
         _type = GetType();
         PropertyInfo[] props = _type.GetProperties(_flag);
-        // GComponent main = (GComponent)type.GetField("main", flag).GetValue(this);
 
         MethodInfo[] methods = _type.GetMethods(_flag);
 
@@ -131,12 +166,14 @@ public class UIBase
     {
         UIDataBind uiBind = (UIDataBind)attr;
 
+        //获取双向绑定委托
         var onValueChange = prop.PropertyType.GetField("_onValueChange", _flag);
         var onUIChange = prop.PropertyType.GetField("_onUIChange", _flag);
 
         var value = prop.GetValue(this);
         if (value == null)
         {
+            //初始化当前属性的值
             Type propType = prop.PropertyType;
             if (propType == typeof(StringUIProp))
             {
@@ -148,6 +185,7 @@ public class UIBase
             }
             else
             {
+                //创建List
                 Type genericType = typeof(UIListProp<>).MakeGenericType(prop.PropertyType.GenericTypeArguments);
                 value = Activator.CreateInstance(genericType);
             }
@@ -304,15 +342,16 @@ public class UIBase
     {
         UIActionBind uiBind = (UIActionBind)attr;
         GObject obj = FguiUtils.GetUI<GObject>(main, uiBind._path);
-        ParameterInfo[] methodParamsListClick;
+        //获取方法的参数
+        ParameterInfo[] methodParamsList;
         bool isAgent;
         Delegate action;
 
         switch (uiBind._type)
         {
             case UIAction.Click:
-                var methodParamsClick = method.GetParameters();
-                if (methodParamsClick.Length == 0)
+                methodParamsList = method.GetParameters();
+                if (methodParamsList.Length == 0)
                 {
                     action = Delegate.CreateDelegate(typeof(EventCallback0), this, method);
                     obj.onClick.Set((EventCallback0)action);
@@ -333,8 +372,8 @@ public class UIBase
                 obj.asList.itemProvider = (ListItemProvider)action;
                 break;
             case UIAction.ListClick:
-                methodParamsListClick = method.GetParameters();
-                if (methodParamsListClick.Length == 0)
+                methodParamsList = method.GetParameters();
+                if (methodParamsList.Length == 0)
                 {
                     action = Delegate.CreateDelegate(typeof(EventCallback0), this, method);
                     obj.asList.onClickItem.Set((EventCallback0)action);
@@ -367,8 +406,8 @@ public class UIBase
                 EventManager.AddListening(obj.id, "OnDrop_" + obj.id, data => ((Action<object>)action).Invoke(data));
                 break;
             case UIAction.Hover:
-                methodParamsListClick = method.GetParameters();
-                if (methodParamsListClick.Length == 0)
+                methodParamsList = method.GetParameters();
+                if (methodParamsList.Length == 0)
                 {
                     action = Delegate.CreateDelegate(typeof(EventCallback0), this, method);
                     obj.onRollOver.Set((EventCallback0)action);
@@ -404,8 +443,8 @@ public class UIBase
                 });
                 break;
             case UIAction.Slider:
-                methodParamsListClick = method.GetParameters();
-                if (methodParamsListClick.Length == 0)
+                methodParamsList = method.GetParameters();
+                if (methodParamsList.Length == 0)
                 {
                     action = Delegate.CreateDelegate(typeof(EventCallback0), this, method);
                     obj.asSlider.onChanged.Set((EventCallback0)action);
@@ -418,8 +457,8 @@ public class UIBase
 
                 break;
             case UIAction.ComboBox:
-                methodParamsListClick = method.GetParameters();
-                if (methodParamsListClick.Length == 0)
+                methodParamsList = method.GetParameters();
+                if (methodParamsList.Length == 0)
                 {
                     action = Delegate.CreateDelegate(typeof(EventCallback0), this, method);
                     obj.asComboBox.onChanged.Set((EventCallback0)action);
@@ -510,19 +549,20 @@ public class UIBase
     /// <summary>
     /// 展示悬浮窗
     /// </summary>
-    /// <param name="name"></param>
+    /// <param name="name">悬浮窗名</param>
+    /// <param name="follow">是否跟随</param>
     /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    protected void ShowFloatView<T>(string name, string UIName, bool follow = false) where T : BaseView, new()
+    protected void ShowFloatView<T>(string name, bool follow = false) where T : BaseView, new()
     {
         BaseView view;
         _floatViews.TryGetValue(name, out view);
         if (view == null)
         {
             view = new T();
+            string uiName = typeof(T).Name;
             view.id = "float_view_" + _floatId++;
             view.name = name;
-            view.main = UIPackage.CreateObject("Test", UIName).asCom;
+            view.main = UIPackage.CreateObject("Test", uiName).asCom;
             view.main.touchable = false;
 
             if (follow)
@@ -542,16 +582,16 @@ public class UIBase
     /// <summary>
     /// 添加拖拽监听代理
     /// </summary>
-    /// <param name="obj"></param>
-    /// <param name="type"></param>
-    /// <param name="method"></param>
-    /// <param name="isAgent"></param>
+    /// <param name="obj">拖拽UI</param>
+    /// <param name="type">拖拽类型 0:start,1:hold,2:end</param>
+    /// <param name="method">拖拽回调</param>
+    /// <param name="isAgent">是否代理拖拽</param>
     private void SetDragListener(GObject obj, int type, MethodInfo method, bool isAgent)
     {
-        ParameterInfo[] methodParamsListClick = method.GetParameters();
+        ParameterInfo[] methodParamsList = method.GetParameters();
 
         var drag = Delegate.CreateDelegate(
-            methodParamsListClick.Length == 0 ? typeof(EventCallback0) : typeof(EventCallback1), this, method);
+            methodParamsList.Length == 0 ? typeof(EventCallback0) : typeof(EventCallback1), this, method);
 
         if (isAgent)
         {
@@ -576,7 +616,7 @@ public class UIBase
                 {
                     //清除放置数据
                     ClearDropData();
-                    if (methodParamsListClick.Length == 0)
+                    if (methodParamsList.Length == 0)
                     {
                         ((EventCallback0)drag).Invoke();
                     }
@@ -605,7 +645,7 @@ public class UIBase
         }
         else
         {
-            if (methodParamsListClick.Length == 0)
+            if (methodParamsList.Length == 0)
             {
                 EventCallback0 action = () =>
                 {
@@ -654,6 +694,12 @@ public class UIBase
         }
     }
 
+    /// <summary>
+    /// 设置拖拽监听
+    /// </summary>
+    /// <param name="obj">拖拽UI</param>
+    /// <param name="type">拖拽类型 0:start,1:hold,2:end</param>
+    /// <param name="dragAction">拖拽回调</param>
     private void SetDragListener(GObject obj, int type, Action dragAction)
     {
         obj.onDragStart.Add(context =>
@@ -701,7 +747,7 @@ public class UIBase
     /// <summary>
     /// 添加放置监听
     /// </summary>
-    /// <param name="obj"></param>
+    /// <param name="obj">放置UI</param>
     private void AddDropListener(GObject obj)
     {
         if (_uiDrag)
@@ -758,8 +804,8 @@ public class UIBase
     /// <summary>
     /// 代理组件克隆及处理
     /// </summary>
-    /// <param name="transCopy"></param>
-    /// <param name="transOrigin"></param>
+    /// <param name="transCopy">克隆体transform</param>
+    /// <param name="transOrigin">原型transform</param>
     private void CompClone(Transform transCopy, Transform transOrigin)
     {
         MeshFilter filter = transCopy.GetComponent<MeshFilter>();

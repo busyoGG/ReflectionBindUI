@@ -82,7 +82,7 @@ public class TestView : BaseView
     [UIActionBind(UIAction.Hover,"7")]
     private void ShowHint()
     {
-        ShowFloatView<HintView>("input_hint","HintView",true);
+        ShowFloatView<HintView>("input_hint",true);
         // ConsoleUtils.Log("ÏÔÊ¾Ðü¸¡´°");
     }
 

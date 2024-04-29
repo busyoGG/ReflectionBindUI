@@ -3,12 +3,24 @@ using System.Reflection;
 using FairyGUI;
 using UnityEngine;
 
+/// <summary>
+/// UI界面基类
+/// </summary>
 public class BaseView : UIBase
 {
+    /// <summary>
+    /// UI节点
+    /// </summary>
     public UINode uiNode;
 
+    /// <summary>
+    /// 缓动最大持续时间
+    /// </summary>
     private int _duration;
 
+    /// <summary>
+    /// 模态背景
+    /// </summary>
     private GGraph _model;
 
     /// <summary>
@@ -16,9 +28,6 @@ public class BaseView : UIBase
     /// </summary>
     private bool _isSaveNode = true;
 
-    /// <summary>
-    /// 只在创建的时候执行
-    /// </summary>
     public void OnAwake()
     {
         if (_isSaveNode)
@@ -27,8 +36,10 @@ public class BaseView : UIBase
             UIManager.Ins().SaveNode(name, uiNode);
         }
 
+        //绑定UI元素
         Bind();
 
+        //绑定类
         var classAttributes = _type.GetCustomAttributes();
 
         foreach (var attr in classAttributes)
@@ -40,12 +51,18 @@ public class BaseView : UIBase
         }
     }
 
+    /// <summary>
+    /// 展示UI
+    /// </summary>
     public void Show()
     {
         TweenIn();
         DoTween(true);
     }
 
+    /// <summary>
+    /// 隐藏UI
+    /// </summary>
     public void Hide()
     {
         TweenOut();
@@ -53,23 +70,39 @@ public class BaseView : UIBase
     }
 
     /// <summary>
-    /// 销毁
+    /// 销毁UI
     /// </summary>
     public void Dispose()
     {
         main.Dispose();
     }
 
+    /// <summary>
+    /// 获取UI显示情况
+    /// </summary>
+    /// <returns></returns>
     public bool GetVisible()
     {
         return main.visible;
     }
 
+    /// <summary>
+    /// 设置UI显示情况
+    /// </summary>
+    /// <param name="visible"></param>
     public void SetVisible(bool visible)
     {
         main.visible = visible;
     }
 
+    /// <summary>
+    /// 添加缓动
+    /// </summary>
+    /// <param name="target">缓动目标属性</param>
+    /// <param name="end">缓动目标值</param>
+    /// <param name="duration">持续时间</param>
+    /// <param name="ease">插值函数</param>
+    /// <param name="callback">回调</param>
     protected void AddTween(TweenTarget target, float end, int duration, TweenEaseType ease = TweenEaseType.Linear,
         Action callback = null)
     {
@@ -77,6 +110,14 @@ public class BaseView : UIBase
         _duration = duration < _duration ? _duration : duration;
     }
 
+    /// <summary>
+    /// 添加缓动
+    /// </summary>
+    /// <param name="target">缓动目标属性</param>
+    /// <param name="end">缓动目标值</param>
+    /// <param name="duration">持续时间</param>
+    /// <param name="ease">插值函数</param>
+    /// <param name="callback">回调</param>
     protected void AddTween(TweenTarget target, Vector2 end, int duration, TweenEaseType ease = TweenEaseType.Linear,
         Action callback = null)
     {
@@ -98,18 +139,31 @@ public class BaseView : UIBase
     {
     }
 
+    /// <summary>
+    /// 进场缓动初始化方法
+    /// </summary>
     protected virtual void TweenIn()
     {
     }
 
+    /// <summary>
+    /// 退场缓动初始化方法
+    /// </summary>
     protected virtual void TweenOut()
     {
     }
 
+    /// <summary>
+    /// 配置初始化
+    /// </summary>
     public virtual void InitConfig()
     {
     }
 
+    /// <summary>
+    /// 执行缓动
+    /// </summary>
+    /// <param name="start">进场或退场</param>
     private void DoTween(bool start)
     {
         if (start)
@@ -140,6 +194,7 @@ public class BaseView : UIBase
             case UIClass.Model:
                 if (_model == null)
                 {
+                    //创建模态背景
                     _model = new GGraph();
                     _model.displayObject.gameObject.name = id + "_" + name + "_Model";
 
@@ -156,14 +211,14 @@ public class BaseView : UIBase
 
                 UIManager.Ins().SetModel(uiNode, _model);
 
-                _model.onClick.Set(() =>
+                if (uiClassBind.extra.Length > 0 && uiClassBind.extra[0] == "Hide")
                 {
-                    if (uiClassBind.extra.Length > 0 && uiClassBind.extra[0] == "Hide")
+                    _model.onClick.Set(() =>
                     {
                         Hide();
                         main.AddChild(_model);
-                    }
-                });
+                    });
+                }
 
                 break;
             case UIClass.Drag:
@@ -175,6 +230,7 @@ public class BaseView : UIBase
                     bool isTouch = false;
                     bool isOut = true;
 
+                    //监听四个事件，保证拖拽的实时性和严格性
                     obj.onTouchBegin.Set(() =>
                     {
                         main.draggable = true;
@@ -207,6 +263,7 @@ public class BaseView : UIBase
                         isOut = true;
                     });
 
+                    //监听置顶
                     if (retop)
                     {
                         obj.onTouchBegin.Add(() => { UIManager.Ins().ResetTop(uiNode); });
@@ -214,8 +271,10 @@ public class BaseView : UIBase
                 }
                 else
                 {
+                    //整体拖拽，不需要切换拖拽状态，因此不监听事件
                     main.draggable = true;
 
+                    //监听置顶
                     if (retop)
                     {
                         main.onTouchBegin.Set(() => { UIManager.Ins().ResetTop(uiNode); });
