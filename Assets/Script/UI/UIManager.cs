@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FairyGUI;
 
 public class UIManager : Singleton<UIManager>
@@ -23,9 +24,10 @@ public class UIManager : Singleton<UIManager>
     /// <param name="parent"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public UINode ShowUI<T>(string folder, string package, string uiName,string name, UINode parent = null)
+    public UINode ShowUI<T>(string folder, string package, string name, UINode parent = null)
         where T : BaseView, new()
     {
+        Type type = typeof(T);
         //包加载逻辑暂时加载Resources文件夹内文件 如有需要可自行修改
         string packagePath = folder + "/" + package;
         UIPackage.AddPackage(packagePath);
@@ -33,7 +35,7 @@ public class UIManager : Singleton<UIManager>
         T view = new T();
         view.id = "ui_" + _id++;
         view.name = name;
-        view.main = UIPackage.CreateObject(package, uiName).asCom;
+        view.main = UIPackage.CreateObject(package, type.Name).asCom;
         
         //创建UI节点
         UINode ui = new UINode();

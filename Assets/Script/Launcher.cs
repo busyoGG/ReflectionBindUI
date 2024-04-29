@@ -27,8 +27,8 @@ public class Launcher : MonoBehaviour
         
         _leftMouseState = UIMouseState.Up;
 
-        UINode first = UIManager.Ins().ShowUI<TestView>("FGUI", "Test", "TestView","TestView0");
-        UIManager.Ins().ShowUI<TestView>("FGUI", "Test", "TestView","TestView1");
+        UINode first = UIManager.Ins().ShowUI<TestView>("FGUI", "Test", "TestView0");
+        UIManager.Ins().ShowUI<TestView>("FGUI", "Test", "TestView1");
         
         ConsoleUtils.Log("≤È’“UI",UIManager.Ins().GetUI("TestView0"));
     }
