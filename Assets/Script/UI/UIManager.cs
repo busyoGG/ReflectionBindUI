@@ -23,7 +23,7 @@ public class UIManager : Singleton<UIManager>
     /// <param name="parent"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public UINode ShowUI<T>(string folder, string package, string uiName, UINode parent = null)
+    public UINode ShowUI<T>(string folder, string package, string uiName,string name, UINode parent = null)
         where T : BaseView, new()
     {
         //包加载逻辑暂时加载Resources文件夹内文件 如有需要可自行修改
@@ -32,6 +32,7 @@ public class UIManager : Singleton<UIManager>
         //创建UI
         T view = new T();
         view.id = "ui_" + _id++;
+        view.name = name;
         view.main = UIPackage.CreateObject(package, uiName).asCom;
         
         //创建UI节点
