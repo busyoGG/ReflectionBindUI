@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class UIBase
 {
@@ -313,7 +312,6 @@ public class UIBase
         {
             case UIAction.Click:
                 var methodParamsClick = method.GetParameters();
-                Delegate click;
                 if (methodParamsClick.Length == 0)
                 {
                     action = Delegate.CreateDelegate(typeof(EventCallback0), this, method);
