@@ -129,6 +129,7 @@ public class BaseView : UIBase
                 if (_model == null)
                 {
                     _model = new GGraph();
+                    _model.displayObject.gameObject.name = id + "_" + name + "_Model"; 
 
                     UIColor colorAttr = _type.GetCustomAttribute<UIColor>();
                     Color color = new Color(0, 0, 0, 0);
@@ -155,9 +156,10 @@ public class BaseView : UIBase
 
                 break;
             case UIClass.Drag:
-                if (uiClassBind.extra.Length > 0)
+                bool retop = uiClassBind.extra[0] == "Retop";
+                if (uiClassBind.extra.Length > 1)
                 {
-                    GObject obj = FguiUtils.GetUI<GObject>(main, uiClassBind.extra[0]);
+                    GObject obj = FguiUtils.GetUI<GObject>(main, uiClassBind.extra[1]);
                     obj.draggable = true;
                     bool isTouch = false;
                     bool isOut = true;
@@ -193,11 +195,28 @@ public class BaseView : UIBase
 
                         isOut = true;
                     });
+                    
+                    if (retop)
+                    {
+                        obj.onTouchBegin.Add(() =>
+                        {
+                            UIManager.Ins().ResetTop(uiNode);
+                        });
+                    }
                 }
                 else
                 {
                     main.draggable = true;
+                
+                    if (retop)
+                    {
+                        main.onTouchBegin.Set(() =>
+                        {
+                            UIManager.Ins().ResetTop(uiNode);
+                        });
+                    }
                 }
+
 
                 break;
         }
