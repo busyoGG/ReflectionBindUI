@@ -1,10 +1,10 @@
 using UnityEngine;
 using FairyGUI;
 
-public class FguiUtils
+public class FGUIUtils
 {
     /// <summary>
-    /// ¸ù¾İÂ·¾¶»ñÈ¡UI×é¼ş
+    /// æ ¹æ®è·¯å¾„è·å–UIç»„ä»¶
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="comp"></param>
@@ -30,7 +30,7 @@ public class FguiUtils
             }
             if (res == null)
             {
-                ConsoleUtils.Error("uiÂ·¾¶´íÎó", path);
+                ConsoleUtils.Error("uiè·¯å¾„é”™è¯¯", path);
                 return null;
             }
             if (res is GComponent)
@@ -46,18 +46,18 @@ public class FguiUtils
     }
 
     /// <summary>
-    /// »ñÈ¡Êó±êÔÚFGUIµÄ×ø±ê
+    /// è·å–é¼ æ ‡åœ¨FGUIçš„åæ ‡
     /// </summary>
     /// <param name="obj"></param>
     /// <returns></returns>
     public static Vector2 GetMousePosition(GObject obj = null)
     {
-        //Êó±êÔÚFGUIµÄ×ø±ê
+        //é¼ æ ‡åœ¨FGUIçš„åæ ‡
         Vector2 pos = Stage.inst.GetTouchPosition(-1);
         Vector2 logicPos;
         if (obj == null)
         {
-            //Êó±êÆÁÄ»Î»ÖÃ×ª»»ÎªFGUIÂß¼­Î»ÖÃ
+            //é¼ æ ‡å±å¹•ä½ç½®è½¬æ¢ä¸ºFGUIé€»è¾‘ä½ç½®
             logicPos = GRoot._inst.GlobalToLocal(pos);
         }
         else

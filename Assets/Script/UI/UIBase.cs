@@ -113,6 +113,9 @@ namespace ReflectionUI
                     }
                 }
             }
+            
+            //客制化UI逻辑执行
+            CustomUI();
         }
 
         /// <summary>
@@ -127,35 +130,35 @@ namespace ReflectionUI
             switch (uiBind._type)
             {
                 case UIType.Comp:
-                    GComponent comp = FguiUtils.GetUI<GComponent>(main, uiBind._path);
+                    GComponent comp = FGUIUtils.GetUI<GComponent>(main, uiBind._path);
                     prop.SetValue(this, comp);
                     break;
                 case UIType.TextField:
-                    GTextField textField = FguiUtils.GetUI<GTextField>(main, uiBind._path);
+                    GTextField textField = FGUIUtils.GetUI<GTextField>(main, uiBind._path);
                     prop.SetValue(this, textField);
                     break;
                 case UIType.TextInput:
-                    GTextInput textInput = FguiUtils.GetUI<GTextInput>(main, uiBind._path);
+                    GTextInput textInput = FGUIUtils.GetUI<GTextInput>(main, uiBind._path);
                     prop.SetValue(this, textInput);
                     break;
                 case UIType.Image:
-                    GImage image = FguiUtils.GetUI<GImage>(main, uiBind._path);
+                    GImage image = FGUIUtils.GetUI<GImage>(main, uiBind._path);
                     prop.SetValue(this, image);
                     break;
                 case UIType.Loader:
-                    GLoader loader = FguiUtils.GetUI<GLoader>(main, uiBind._path);
+                    GLoader loader = FGUIUtils.GetUI<GLoader>(main, uiBind._path);
                     prop.SetValue(this, loader);
                     break;
                 case UIType.List:
-                    GList list = FguiUtils.GetUI<GList>(main, uiBind._path);
+                    GList list = FGUIUtils.GetUI<GList>(main, uiBind._path);
                     prop.SetValue(this, list);
                     break;
                 case UIType.Slider:
-                    GSlider slider = FguiUtils.GetUI<GSlider>(main, uiBind._path);
+                    GSlider slider = FGUIUtils.GetUI<GSlider>(main, uiBind._path);
                     prop.SetValue(this, slider);
                     break;
                 case UIType.ComboBox:
-                    GComboBox comboBox = FguiUtils.GetUI<GComboBox>(main, uiBind._path);
+                    GComboBox comboBox = FGUIUtils.GetUI<GComboBox>(main, uiBind._path);
                     prop.SetValue(this, comboBox);
                     break;
             }
@@ -200,7 +203,7 @@ namespace ReflectionUI
             switch (uiBind._type)
             {
                 case UIType.TextField:
-                    GTextField textField = FguiUtils.GetUI<GTextField>(main, uiBind._path);
+                    GTextField textField = FGUIUtils.GetUI<GTextField>(main, uiBind._path);
 
                     void ActionText(string data)
                     {
@@ -216,7 +219,7 @@ namespace ReflectionUI
                     onUIChange?.SetValue(value, (Func<string>)ActionTextUI);
                     break;
                 case UIType.TextInput:
-                    GTextInput textInput = FguiUtils.GetUI<GTextInput>(main, uiBind._path);
+                    GTextInput textInput = FGUIUtils.GetUI<GTextInput>(main, uiBind._path);
 
                     void ActionInput(string data)
                     {
@@ -232,7 +235,7 @@ namespace ReflectionUI
                     onUIChange?.SetValue(value, (Func<string>)ActionInputUI);
                     break;
                 case UIType.Image:
-                    GImage image = FguiUtils.GetUI<GImage>(main, uiBind._path);
+                    GImage image = FGUIUtils.GetUI<GImage>(main, uiBind._path);
 
                     void ActionImage(string data)
                     {
@@ -248,7 +251,7 @@ namespace ReflectionUI
                     onUIChange?.SetValue(value, (Func<string>)ActionImageUI);
                     break;
                 case UIType.Loader:
-                    GLoader loader = FguiUtils.GetUI<GLoader>(main, uiBind._path);
+                    GLoader loader = FGUIUtils.GetUI<GLoader>(main, uiBind._path);
 
                     void ActionLoader(string data)
                     {
@@ -266,7 +269,7 @@ namespace ReflectionUI
                     onUIChange?.SetValue(value, (Func<string>)ActionLoaderUI);
                     break;
                 case UIType.List:
-                    GList list = FguiUtils.GetUI<GList>(main, uiBind._path);
+                    GList list = FGUIUtils.GetUI<GList>(main, uiBind._path);
 
                     void ActionList(int data)
                     {
@@ -302,7 +305,7 @@ namespace ReflectionUI
                     onValueChange?.SetValue(value, (Action<int>)ActionList);
                     break;
                 case UIType.Slider:
-                    GSlider slider = FguiUtils.GetUI<GSlider>(main, uiBind._path);
+                    GSlider slider = FGUIUtils.GetUI<GSlider>(main, uiBind._path);
 
                     void ActionSlider(double data)
                     {
@@ -318,10 +321,10 @@ namespace ReflectionUI
                     onUIChange?.SetValue(value, (Func<double>)ActionSliderUI);
                     break;
                 case UIType.ComboBox:
-                    GComboBox comboBox = FguiUtils.GetUI<GComboBox>(main, uiBind._path);
+                    GComboBox comboBox = FGUIUtils.GetUI<GComboBox>(main, uiBind._path);
 
                     UIOptions uiOptions = prop.GetCustomAttribute<UIOptions>();
-                    
+
                     comboBox.items = uiOptions.GetOptions();
 
                     void ActionComboBox(double data)
@@ -349,10 +352,11 @@ namespace ReflectionUI
         private void BindAction(MethodInfo method, object attr)
         {
             UIActionBind uiBind = (UIActionBind)attr;
-            GObject obj = FguiUtils.GetUI<GObject>(main, uiBind._path);
+            GObject obj = FGUIUtils.GetUI<GObject>(main, uiBind._path);
             //获取方法的参数
             ParameterInfo[] methodParamsList;
             bool isAgent;
+            
             Delegate action;
 
             UICondition condition = method.GetCustomAttribute<UICondition>();
@@ -435,7 +439,7 @@ namespace ReflectionUI
                         {
                             if (_floatViewOnShow.main.displayObject.gameObject.GetComponent<UIFollow>() != null)
                             {
-                                _floatViewOnShow.main.xy = FguiUtils.GetMousePosition();
+                                _floatViewOnShow.main.xy = FGUIUtils.GetMousePosition();
                             }
                             else
                             {
@@ -589,6 +593,14 @@ namespace ReflectionUI
             }
 
             _floatViewOnShow = view;
+        }
+
+        /// <summary>
+        /// 客制化 UI
+        /// </summary>
+        protected virtual void CustomUI()
+        {
+            
         }
 
         /// <summary>

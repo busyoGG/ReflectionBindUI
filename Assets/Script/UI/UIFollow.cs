@@ -13,7 +13,7 @@ namespace ReflectionUI
         {
             if (_obj.visible)
             {
-                _obj.xy = FguiUtils.GetMousePosition(_parent);
+                _obj.xy = FGUIUtils.GetMousePosition(_parent);
             }
         }
 

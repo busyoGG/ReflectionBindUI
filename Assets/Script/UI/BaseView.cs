@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using FairyGUI;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace ReflectionUI
@@ -32,9 +33,13 @@ namespace ReflectionUI
 
         public void OnAwake()
         {
+            //初始化配置
+            InitConfig();
+
             if (_isSaveNode)
             {
-                //保存节点
+                //保存节点 使该 UI 成为全局唯一 UI
+                //如果需要该 UI 可以重复创建，则令 _isSaveNode = false，或者设置 UI 的名字为不重名
                 UIManager.Ins().SaveNode(name, uiNode);
             }
 
@@ -159,7 +164,7 @@ namespace ReflectionUI
         /// <summary>
         /// 配置初始化
         /// </summary>
-        public virtual void InitConfig()
+        protected virtual void InitConfig()
         {
         }
 
@@ -214,7 +219,10 @@ namespace ReflectionUI
 
                     UIManager.Ins().SetModel(uiNode, _model);
 
-                    if (uiClassBind.extra.Length > 0 && uiClassBind.extra[0] == "Hide")
+                    UICondition condition = _type.GetCustomAttribute<UICondition>();
+
+                    //判断模态窗口是否需要点击模态部分关闭窗口
+                    if (condition != null && condition.GetBool())
                     {
                         _model.onClick.Set(() =>
                         {
@@ -225,11 +233,15 @@ namespace ReflectionUI
 
                     break;
                 case UIClass.Drag:
-                    bool retop = uiClassBind.extra.Length > 0 && uiClassBind.extra[0] == "Retop";
-                    if (uiClassBind.extra.Length > 1)
+
+                    UIWindow uiWindow = _type.GetCustomAttribute<UIWindow>();
+
+                    bool retop = uiWindow == null || uiWindow.IsReTop();
+                    string path = uiWindow?.GetOperateItemPath();
+
+                    if (!string.IsNullOrEmpty(path))
                     {
-                        GObject obj = FguiUtils.GetUI<GObject>(main, uiClassBind.extra[1]);
-                        obj.draggable = true;
+                        GObject obj = FGUIUtils.GetUI<GObject>(main, path);
                         bool isTouch = false;
                         bool isOut = true;
 
@@ -280,7 +292,7 @@ namespace ReflectionUI
                         //监听置顶
                         if (retop)
                         {
-                            main.onTouchBegin.Set(() => { UIManager.Ins().ResetTop(uiNode); });
+                            main.onTouchBegin.Add(evt => { UIManager.Ins().ResetTop(uiNode); });
                         }
                     }
 

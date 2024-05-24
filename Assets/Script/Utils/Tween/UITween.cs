@@ -1,34 +1,36 @@
 ﻿using System;
-using UnityEngine;
 
-public class UITween
+namespace ReflectionUI
 {
-    public int id;
-    
-    public float duration;
-
-    private int _time;
-
-    public bool isStop;
-
-    public Action<float> updater;
-
-    public Action callback;
-
-    public void Update(int delta)
+    public class UITween
     {
-        _time += delta;
-        if (_time <= duration)
+        public int id;
+
+        public float duration;
+
+        private int _time;
+
+        public bool isStop;
+
+        public Action<float> updater;
+
+        public Action callback;
+
+        public void Update(int delta)
         {
-            updater?.Invoke(_time);
-        }
-        else
-        {
-            updater?.Invoke(duration);
-            callback?.Invoke();
-            isStop = true;
-            updater = null;
-            callback = null;
+            _time += delta;
+            if (_time <= duration)
+            {
+                updater?.Invoke(_time);
+            }
+            else
+            {
+                updater?.Invoke(duration);
+                callback?.Invoke();
+                isStop = true;
+                updater = null;
+                callback = null;
+            }
         }
     }
 }

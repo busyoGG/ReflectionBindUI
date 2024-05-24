@@ -10,12 +10,9 @@ namespace ReflectionUI
     {
         public UIClass type;
 
-        public string[] extra;
-
-        public UIClassBind(UIClass type, params string[] extra)
+        public UIClassBind(UIClass type)
         {
             this.type = type;
-            this.extra = extra;
         }
     }
 }

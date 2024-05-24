@@ -1,49 +1,52 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TweenUpdater : MonoBehaviour
+namespace ReflectionUI
 {
-    private Dictionary<int,UITween> _actions = new Dictionary<int,UITween>();
-
-    private List<int> _removeActionIndexes = new List<int>();
-
-    void Update()
+    public class TweenUpdater : MonoBehaviour
     {
-        int delta = (int)(Time.deltaTime * 1000);
-        foreach (var action in _actions)
-        {
-            UITween vt = action.Value;
+        private Dictionary<int, UITween> _actions = new Dictionary<int, UITween>();
 
-            if (vt.isStop)
+        private List<int> _removeActionIndexes = new List<int>();
+
+        void Update()
+        {
+            int delta = (int)(Time.deltaTime * 1000);
+            foreach (var action in _actions)
             {
-                _removeActionIndexes.Add(vt.id);
+                UITween vt = action.Value;
+
+                if (vt.isStop)
+                {
+                    _removeActionIndexes.Add(vt.id);
+                }
+                else
+                {
+                    vt.Update(delta);
+                }
             }
-            else
+
+            for (int i = _removeActionIndexes.Count - 1; i >= 0; i--)
             {
-                vt.Update(delta);
+                _actions.Remove(_removeActionIndexes[i]);
+                _removeActionIndexes.RemoveAt(i);
             }
         }
 
-        for (int i = _removeActionIndexes.Count - 1; i >= 0; i--)
+        public void AddTween(UITween tween)
         {
-            _actions.Remove(_removeActionIndexes[i]);
-            _removeActionIndexes.RemoveAt(i);
+            _actions.Add(tween.id, tween);
         }
-    }
 
-    public void AddTween(UITween tween)
-    {
-        _actions.Add(tween.id,tween);
-    }
-
-    public void StopTween(int id)
-    {
-        UITween tween;
-        _actions.TryGetValue(id, out tween);
-
-        if (tween != null)
+        public void StopTween(int id)
         {
-            tween.isStop = true;
+            UITween tween;
+            _actions.TryGetValue(id, out tween);
+
+            if (tween != null)
+            {
+                tween.isStop = true;
+            }
         }
     }
 }

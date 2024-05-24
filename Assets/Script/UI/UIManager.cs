@@ -84,7 +84,6 @@ namespace ReflectionUI
 
             view.uiNode = ui;
 
-            view.InitConfig();
             view.OnAwake();
             view.Show();
 
@@ -164,6 +163,7 @@ namespace ReflectionUI
         public void ResetTop(UINode ui)
         {
             _layer[ui.layer].AddChild(ui.ui.main);
+            ConsoleUtils.Log("重新置顶");
         }
 
         /// <summary>

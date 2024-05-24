@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using ReflectionUI;
 
-[UIClassBind(UIClass.Drag,"Retop","n10"),UIColor(1,1,1,0.5f)]
+[UIClassBind(UIClass.Drag),UIWindow(true,"n10"),UIColor(1,1,1,0.5f)]
 public class TestView : BaseView
 {
     [UIDataBind(UIType.TextField, "1")]
     private StringUIProp _testText { get; set; }
 
-    [UIDataBind(UIType.List, "n1")]
+    [UIDataBind(UIType.List, "n1"),UIAdaptive(AdaptiveType.Height)]
     private UIListProp<string> _testList { get; set; }
 
     [UIDataBind(UIType.Loader, "4")]
@@ -37,13 +37,13 @@ public class TestView : BaseView
 
         content.text = _testList.Get()[index];
 
-        SetDrag(UIAction.DragStart, comp, () =>
-        {
-            ConsoleUtils.Log("开始拖拽");
-            AddDropData(index);
-        });
-
-        SetDrop(comp, (object data) => { ConsoleUtils.Log("放置", data); });
+        // SetDrag(UIAction.DragStart, comp, () =>
+        // {
+        //     ConsoleUtils.Log("开始拖拽");
+        //     AddDropData(index);
+        // });
+        //
+        // SetDrop(comp, (object data) => { ConsoleUtils.Log("放置", data); });
     }
 
     [UIActionBind(UIAction.Click, "3")]
@@ -134,5 +134,15 @@ public class TestView : BaseView
     // protected override void TweenOut()
     // {
     //     AddTween(TweenTarget.X,500,2000,TweenEaseType.CircOut);
+    // }
+
+    // /// <summary>
+    // /// 重写客制化UI
+    // /// </summary>
+    // protected override void CustomUI()
+    // {
+    //     GLoader loader = FguiUtils.GetUI<GLoader>(main, "4");
+    //
+    //     loader.url = "ui://Test/Icon";
     // }
 }
