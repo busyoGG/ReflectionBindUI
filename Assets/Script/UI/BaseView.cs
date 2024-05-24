@@ -3,286 +3,290 @@ using System.Reflection;
 using FairyGUI;
 using UnityEngine;
 
-/// <summary>
-/// UI½çÃæ»ùÀà
-/// </summary>
-public class BaseView : UIBase
+namespace ReflectionUI
 {
     /// <summary>
-    /// UI½Úµã
+    /// UIç•Œé¢åŸºç±»
     /// </summary>
-    public UINode uiNode;
-
-    /// <summary>
-    /// »º¶¯×î´ó³ÖĞøÊ±¼ä
-    /// </summary>
-    private int _duration;
-
-    /// <summary>
-    /// Ä£Ì¬±³¾°
-    /// </summary>
-    private GGraph _model;
-
-    /// <summary>
-    /// ÊÇ·ñ±£´æ½Úµã Ä¬ÈÏ±£´æ
-    /// </summary>
-    private bool _isSaveNode = true;
-
-    public void OnAwake()
+    public class BaseView : UIBase
     {
-        if (_isSaveNode)
+        /// <summary>
+        /// UIèŠ‚ç‚¹
+        /// </summary>
+        public UINode uiNode;
+
+        /// <summary>
+        /// ç¼“åŠ¨æœ€å¤§æŒç»­æ—¶é—´
+        /// </summary>
+        private int _duration;
+
+        /// <summary>
+        /// æ¨¡æ€èƒŒæ™¯
+        /// </summary>
+        private GGraph _model;
+
+        /// <summary>
+        /// æ˜¯å¦ä¿å­˜èŠ‚ç‚¹ é»˜è®¤ä¿å­˜
+        /// </summary>
+        private bool _isSaveNode = true;
+
+        public void OnAwake()
         {
-            //±£´æ½Úµã
-            UIManager.Ins().SaveNode(name, uiNode);
-        }
-
-        //°ó¶¨UIÔªËØ
-        Bind();
-
-        //°ó¶¨Àà
-        var classAttributes = _type.GetCustomAttributes();
-
-        foreach (var attr in classAttributes)
-        {
-            if (attr is UIClassBind)
+            if (_isSaveNode)
             {
-                BindClass(attr);
+                //ä¿å­˜èŠ‚ç‚¹
+                UIManager.Ins().SaveNode(name, uiNode);
+            }
+
+            //ç»‘å®šUIå…ƒç´ 
+            Bind();
+
+            //ç»‘å®šç±»
+            var classAttributes = _type.GetCustomAttributes();
+
+            foreach (var attr in classAttributes)
+            {
+                if (attr is UIClassBind)
+                {
+                    BindClass(attr);
+                }
             }
         }
-    }
 
-    /// <summary>
-    /// Õ¹Ê¾UI
-    /// </summary>
-    public void Show()
-    {
-        TweenIn();
-        DoTween(true);
-    }
-
-    /// <summary>
-    /// Òş²ØUI
-    /// </summary>
-    public void Hide()
-    {
-        TweenOut();
-        DoTween(false);
-    }
-
-    /// <summary>
-    /// Ïú»ÙUI
-    /// </summary>
-    public void Dispose()
-    {
-        main.Dispose();
-    }
-
-    /// <summary>
-    /// »ñÈ¡UIÏÔÊ¾Çé¿ö
-    /// </summary>
-    /// <returns></returns>
-    public bool GetVisible()
-    {
-        return main.visible;
-    }
-
-    /// <summary>
-    /// ÉèÖÃUIÏÔÊ¾Çé¿ö
-    /// </summary>
-    /// <param name="visible"></param>
-    public void SetVisible(bool visible)
-    {
-        main.visible = visible;
-    }
-
-    /// <summary>
-    /// Ìí¼Ó»º¶¯
-    /// </summary>
-    /// <param name="target">»º¶¯Ä¿±êÊôĞÔ</param>
-    /// <param name="end">»º¶¯Ä¿±êÖµ</param>
-    /// <param name="duration">³ÖĞøÊ±¼ä</param>
-    /// <param name="ease">²åÖµº¯Êı</param>
-    /// <param name="callback">»Øµ÷</param>
-    protected void AddTween(TweenTarget target, float end, int duration, TweenEaseType ease = TweenEaseType.Linear,
-        Action callback = null)
-    {
-        UITweenManager.Ins().AddTween(main, target, end, duration, ease, callback);
-        _duration = duration < _duration ? _duration : duration;
-    }
-
-    /// <summary>
-    /// Ìí¼Ó»º¶¯
-    /// </summary>
-    /// <param name="target">»º¶¯Ä¿±êÊôĞÔ</param>
-    /// <param name="end">»º¶¯Ä¿±êÖµ</param>
-    /// <param name="duration">³ÖĞøÊ±¼ä</param>
-    /// <param name="ease">²åÖµº¯Êı</param>
-    /// <param name="callback">»Øµ÷</param>
-    protected void AddTween(TweenTarget target, Vector2 end, int duration, TweenEaseType ease = TweenEaseType.Linear,
-        Action callback = null)
-    {
-        UITweenManager.Ins().AddTween(main, target, end, duration, ease, callback);
-        _duration = duration < _duration ? _duration : duration;
-    }
-
-    /// <summary>
-    /// Ã¿´ÎÕ¹Ê¾µÄÊ±ºòÖ´ĞĞ
-    /// </summary>
-    protected virtual void OnShow()
-    {
-    }
-
-    /// <summary>
-    /// Ã¿´ÎÒş²ØµÄÊ±ºòÖ´ĞĞ
-    /// </summary>
-    protected virtual void OnHide()
-    {
-    }
-
-    /// <summary>
-    /// ½ø³¡»º¶¯³õÊ¼»¯·½·¨
-    /// </summary>
-    protected virtual void TweenIn()
-    {
-    }
-
-    /// <summary>
-    /// ÍË³¡»º¶¯³õÊ¼»¯·½·¨
-    /// </summary>
-    protected virtual void TweenOut()
-    {
-    }
-
-    /// <summary>
-    /// ÅäÖÃ³õÊ¼»¯
-    /// </summary>
-    public virtual void InitConfig()
-    {
-    }
-
-    /// <summary>
-    /// Ö´ĞĞ»º¶¯
-    /// </summary>
-    /// <param name="start">½ø³¡»òÍË³¡</param>
-    private void DoTween(bool start)
-    {
-        if (start)
+        /// <summary>
+        /// å±•ç¤ºUI
+        /// </summary>
+        public void Show()
         {
-            SetVisible(true);
-            AddTween(TweenTarget.None, 0, _duration, TweenEaseType.Linear, OnShow);
+            TweenIn();
+            DoTween(true);
         }
-        else
+
+        /// <summary>
+        /// éšè—UI
+        /// </summary>
+        public void Hide()
         {
-            AddTween(TweenTarget.None, 0, _duration, TweenEaseType.Linear, () =>
+            TweenOut();
+            DoTween(false);
+        }
+
+        /// <summary>
+        /// é”€æ¯UI
+        /// </summary>
+        public void Dispose()
+        {
+            main.Dispose();
+        }
+
+        /// <summary>
+        /// è·å–UIæ˜¾ç¤ºæƒ…å†µ
+        /// </summary>
+        /// <returns></returns>
+        public bool GetVisible()
+        {
+            return main.visible;
+        }
+
+        /// <summary>
+        /// è®¾ç½®UIæ˜¾ç¤ºæƒ…å†µ
+        /// </summary>
+        /// <param name="visible"></param>
+        public void SetVisible(bool visible)
+        {
+            main.visible = visible;
+        }
+
+        /// <summary>
+        /// æ·»åŠ ç¼“åŠ¨
+        /// </summary>
+        /// <param name="target">ç¼“åŠ¨ç›®æ ‡å±æ€§</param>
+        /// <param name="end">ç¼“åŠ¨ç›®æ ‡å€¼</param>
+        /// <param name="duration">æŒç»­æ—¶é—´</param>
+        /// <param name="ease">æ’å€¼å‡½æ•°</param>
+        /// <param name="callback">å›è°ƒ</param>
+        protected void AddTween(TweenTarget target, float end, int duration, TweenEaseType ease = TweenEaseType.Linear,
+            Action callback = null)
+        {
+            UITweenManager.Ins().AddTween(main, target, end, duration, ease, callback);
+            _duration = duration < _duration ? _duration : duration;
+        }
+
+        /// <summary>
+        /// æ·»åŠ ç¼“åŠ¨
+        /// </summary>
+        /// <param name="target">ç¼“åŠ¨ç›®æ ‡å±æ€§</param>
+        /// <param name="end">ç¼“åŠ¨ç›®æ ‡å€¼</param>
+        /// <param name="duration">æŒç»­æ—¶é—´</param>
+        /// <param name="ease">æ’å€¼å‡½æ•°</param>
+        /// <param name="callback">å›è°ƒ</param>
+        protected void AddTween(TweenTarget target, Vector2 end, int duration,
+            TweenEaseType ease = TweenEaseType.Linear,
+            Action callback = null)
+        {
+            UITweenManager.Ins().AddTween(main, target, end, duration, ease, callback);
+            _duration = duration < _duration ? _duration : duration;
+        }
+
+        /// <summary>
+        /// æ¯æ¬¡å±•ç¤ºçš„æ—¶å€™æ‰§è¡Œ
+        /// </summary>
+        protected virtual void OnShow()
+        {
+        }
+
+        /// <summary>
+        /// æ¯æ¬¡éšè—çš„æ—¶å€™æ‰§è¡Œ
+        /// </summary>
+        protected virtual void OnHide()
+        {
+        }
+
+        /// <summary>
+        /// è¿›åœºç¼“åŠ¨åˆå§‹åŒ–æ–¹æ³•
+        /// </summary>
+        protected virtual void TweenIn()
+        {
+        }
+
+        /// <summary>
+        /// é€€åœºç¼“åŠ¨åˆå§‹åŒ–æ–¹æ³•
+        /// </summary>
+        protected virtual void TweenOut()
+        {
+        }
+
+        /// <summary>
+        /// é…ç½®åˆå§‹åŒ–
+        /// </summary>
+        public virtual void InitConfig()
+        {
+        }
+
+        /// <summary>
+        /// æ‰§è¡Œç¼“åŠ¨
+        /// </summary>
+        /// <param name="start">è¿›åœºæˆ–é€€åœº</param>
+        private void DoTween(bool start)
+        {
+            if (start)
             {
-                main.visible = false;
-                OnHide();
-            });
+                SetVisible(true);
+                AddTween(TweenTarget.None, 0, _duration, TweenEaseType.Linear, OnShow);
+            }
+            else
+            {
+                AddTween(TweenTarget.None, 0, _duration, TweenEaseType.Linear, () =>
+                {
+                    main.visible = false;
+                    OnHide();
+                });
+            }
         }
-    }
 
-    /// <summary>
-    /// °ó¶¨ Àà
-    /// </summary>
-    /// <param name="attr"></param>
-    private void BindClass(object attr)
-    {
-        UIClassBind uiClassBind = (UIClassBind)attr;
-
-        switch (uiClassBind.type)
+        /// <summary>
+        /// ç»‘å®š ç±»
+        /// </summary>
+        /// <param name="attr"></param>
+        private void BindClass(object attr)
         {
-            case UIClass.Model:
-                if (_model == null)
-                {
-                    //´´½¨Ä£Ì¬±³¾°
-                    _model = new GGraph();
-                    _model.displayObject.gameObject.name = id + "_" + name + "_Model";
+            UIClassBind uiClassBind = (UIClassBind)attr;
 
-                    UIColor colorAttr = _type.GetCustomAttribute<UIColor>();
-                    Color color = new Color(0, 0, 0, 0);
-                    if (colorAttr != null)
+            switch (uiClassBind.type)
+            {
+                case UIClass.Model:
+                    if (_model == null)
                     {
-                        color = colorAttr.color;
-                    }
+                        //åˆ›å»ºæ¨¡æ€èƒŒæ™¯
+                        _model = new GGraph();
+                        _model.displayObject.gameObject.name = id + "_" + name + "_Model";
 
-                    Vector2 size = GRoot.inst.size;
-                    _model.DrawRect(size.x, size.y, 0, new Color(), color);
-                }
-
-                UIManager.Ins().SetModel(uiNode, _model);
-
-                if (uiClassBind.extra.Length > 0 && uiClassBind.extra[0] == "Hide")
-                {
-                    _model.onClick.Set(() =>
-                    {
-                        Hide();
-                        main.AddChild(_model);
-                    });
-                }
-
-                break;
-            case UIClass.Drag:
-                bool retop = uiClassBind.extra.Length > 0 && uiClassBind.extra[0] == "Retop";
-                if (uiClassBind.extra.Length > 1)
-                {
-                    GObject obj = FguiUtils.GetUI<GObject>(main, uiClassBind.extra[1]);
-                    obj.draggable = true;
-                    bool isTouch = false;
-                    bool isOut = true;
-
-                    //¼àÌıËÄ¸öÊÂ¼ş£¬±£Ö¤ÍÏ×§µÄÊµÊ±ĞÔºÍÑÏ¸ñĞÔ
-                    obj.onTouchBegin.Set(() =>
-                    {
-                        main.draggable = true;
-                        isTouch = true;
-                    });
-
-                    obj.onTouchEnd.Set(() =>
-                    {
-                        if (isOut)
+                        UIColor colorAttr = _type.GetCustomAttribute<UIColor>();
+                        Color color = new Color(0, 0, 0, 0);
+                        if (colorAttr != null)
                         {
-                            main.draggable = false;
+                            color = colorAttr.color;
                         }
 
-                        isTouch = false;
-                    });
+                        Vector2 size = GRoot.inst.size;
+                        _model.DrawRect(size.x, size.y, 0, new Color(), color);
+                    }
 
-                    obj.onRollOver.Set(() =>
-                    {
-                        main.draggable = true;
-                        isOut = false;
-                    });
+                    UIManager.Ins().SetModel(uiNode, _model);
 
-                    obj.onRollOut.Set(() =>
+                    if (uiClassBind.extra.Length > 0 && uiClassBind.extra[0] == "Hide")
                     {
-                        if (!isTouch)
+                        _model.onClick.Set(() =>
                         {
-                            main.draggable = false;
+                            Hide();
+                            main.AddChild(_model);
+                        });
+                    }
+
+                    break;
+                case UIClass.Drag:
+                    bool retop = uiClassBind.extra.Length > 0 && uiClassBind.extra[0] == "Retop";
+                    if (uiClassBind.extra.Length > 1)
+                    {
+                        GObject obj = FguiUtils.GetUI<GObject>(main, uiClassBind.extra[1]);
+                        obj.draggable = true;
+                        bool isTouch = false;
+                        bool isOut = true;
+
+                        //ç›‘å¬å››ä¸ªäº‹ä»¶ï¼Œä¿è¯æ‹–æ‹½çš„å®æ—¶æ€§å’Œä¸¥æ ¼æ€§
+                        obj.onTouchBegin.Set(() =>
+                        {
+                            main.draggable = true;
+                            isTouch = true;
+                        });
+
+                        obj.onTouchEnd.Set(() =>
+                        {
+                            if (isOut)
+                            {
+                                main.draggable = false;
+                            }
+
+                            isTouch = false;
+                        });
+
+                        obj.onRollOver.Set(() =>
+                        {
+                            main.draggable = true;
+                            isOut = false;
+                        });
+
+                        obj.onRollOut.Set(() =>
+                        {
+                            if (!isTouch)
+                            {
+                                main.draggable = false;
+                            }
+
+                            isOut = true;
+                        });
+
+                        //ç›‘å¬ç½®é¡¶
+                        if (retop)
+                        {
+                            obj.onTouchBegin.Add(() => { UIManager.Ins().ResetTop(uiNode); });
                         }
-
-                        isOut = true;
-                    });
-
-                    //¼àÌıÖÃ¶¥
-                    if (retop)
-                    {
-                        obj.onTouchBegin.Add(() => { UIManager.Ins().ResetTop(uiNode); });
                     }
-                }
-                else
-                {
-                    //ÕûÌåÍÏ×§£¬²»ĞèÒªÇĞ»»ÍÏ×§×´Ì¬£¬Òò´Ë²»¼àÌıÊÂ¼ş
-                    main.draggable = true;
-
-                    //¼àÌıÖÃ¶¥
-                    if (retop)
+                    else
                     {
-                        main.onTouchBegin.Set(() => { UIManager.Ins().ResetTop(uiNode); });
+                        //æ•´ä½“æ‹–æ‹½ï¼Œä¸éœ€è¦åˆ‡æ¢æ‹–æ‹½çŠ¶æ€ï¼Œå› æ­¤ä¸ç›‘å¬äº‹ä»¶
+                        main.draggable = true;
+
+                        //ç›‘å¬ç½®é¡¶
+                        if (retop)
+                        {
+                            main.onTouchBegin.Set(() => { UIManager.Ins().ResetTop(uiNode); });
+                        }
                     }
-                }
 
 
-                break;
+                    break;
+            }
         }
     }
 }

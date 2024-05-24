@@ -1,23 +1,26 @@
 using FairyGUI;
 using UnityEngine;
 
-public class UIFollow : MonoBehaviour
+namespace ReflectionUI
 {
-    private GObject _obj;
-
-    private GObject _parent;
-
-    void Update()
+    public class UIFollow : MonoBehaviour
     {
-        if (_obj.visible)
+        private GObject _obj;
+
+        private GObject _parent;
+
+        void Update()
         {
-            _obj.xy = FguiUtils.GetMousePosition(_parent);
+            if (_obj.visible)
+            {
+                _obj.xy = FguiUtils.GetMousePosition(_parent);
+            }
         }
-    }
 
-    public void SetObj(GObject obj,GObject parent)
-    {
-        _obj = obj;
-        _parent = parent;
+        public void SetObj(GObject obj, GObject parent)
+        {
+            _obj = obj;
+            _parent = parent;
+        }
     }
 }

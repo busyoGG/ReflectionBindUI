@@ -2,6 +2,7 @@ using FairyGUI;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ReflectionUI;
 
 [UIClassBind(UIClass.Drag,"Retop","n10"),UIColor(1,1,1,0.5f)]
 public class TestView : BaseView
@@ -21,7 +22,7 @@ public class TestView : BaseView
     [UIDataBind(UIType.TextInput, "6")]
     private StringUIProp _input { get; set; }
     
-    [UIDataBind(UIType.ComboBox,"9","1","b")]
+    [UIDataBind(UIType.ComboBox,"9"),UIOptions("1","a","é€‰é¡¹3")]
     private DoubleUIProp _comboBoxIndex { get; set; }
 
     [UICompBind(UIType.Loader, "4")]
@@ -38,40 +39,40 @@ public class TestView : BaseView
 
         SetDrag(UIAction.DragStart, comp, () =>
         {
-            ConsoleUtils.Log("¿ªÊ¼ÍÏ×§");
+            ConsoleUtils.Log("å¼€å§‹æ‹–æ‹½");
             AddDropData(index);
         });
 
-        SetDrop(comp, (object data) => { ConsoleUtils.Log("·ÅÖÃ", data); });
+        SetDrop(comp, (object data) => { ConsoleUtils.Log("æ”¾ç½®", data); });
     }
 
     [UIActionBind(UIAction.Click, "3")]
     private void OnBtnClick()
     {
-        ConsoleUtils.Log("µã»÷ÁË°´Å¥");
+        ConsoleUtils.Log("ç‚¹å‡»äº†æŒ‰é’®");
         _comboBoxIndex.Set(1);
         EventManager.TriggerEvent("show_console", null);
     }
 
-    [UIActionBind(UIAction.DragEnd, "3", "Self")]
+    [UIActionBind(UIAction.DragEnd, "3")]
     private void OnDrag(EventContext context)
     {
-        //Ìí¼ÓÍÏ×§Êı¾İ
-        AddDropData(1, 2, "²âÊÔÊı¾İ");
-        Debug.Log("½áÊøÍÏ×§");
+        //æ·»åŠ æ‹–æ‹½æ•°æ®
+        AddDropData(1, 2, "æµ‹è¯•æ•°æ®");
+        Debug.Log("ç»“æŸæ‹–æ‹½");
         Debug.Log(GRoot.inst.touchTarget);
     }
 
     [UIActionBind(UIAction.Drop, "4")]
     private void OnDrop(object data)
     {
-        ConsoleUtils.Log("ÍÏ×§·ÅÖÃ", data);
+        ConsoleUtils.Log("æ‹–æ‹½æ”¾ç½®", data);
     }
 
     [UIListenerBind("show_console")]
     private void ShowConsole(ArrayList data)
     {
-        ConsoleUtils.Log("´¥·¢ÁËÊÂ¼ş");
+        ConsoleUtils.Log("è§¦å‘äº†äº‹ä»¶");
         _loaderUrl.Set("ui://Test/Icon");
         _testList.Set(new List<string> { "a", "b", "c" });
 
@@ -83,19 +84,19 @@ public class TestView : BaseView
     private void ShowHint()
     {
         ShowFloatView<HintView>("input_hint",true);
-        // ConsoleUtils.Log("ÏÔÊ¾Ğü¸¡´°");
+        // ConsoleUtils.Log("æ˜¾ç¤ºæ‚¬æµ®çª—");
     }
 
     [UIActionBind(UIAction.Slider,"5")]
     private void OnSliderChanged()
     {
-        ConsoleUtils.Log("»¬¶¯Ìõ",_slideValue.Get());
+        ConsoleUtils.Log("æ»‘åŠ¨æ¡",_slideValue.Get());
     }
     
     [UIActionBind(UIAction.ComboBox,"9")]
     private void OnComboBoxChanged()
     {
-        ConsoleUtils.Log("ÏÂÀ­¿ò",_comboBoxIndex.Get());
+        ConsoleUtils.Log("ä¸‹æ‹‰æ¡†",_comboBoxIndex.Get());
     }
 
     [UIActionBind(UIAction.Click,"n11")]

@@ -5,625 +5,737 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
-/// <summary>
-/// UIÄÚ²¿ÔªËØ»ùÀà
-/// </summary>
-public class UIBase
+namespace ReflectionUI
 {
     /// <summary>
-    /// ½çÃæUI¸ùÔªËØ
+    /// UIå†…éƒ¨å…ƒç´ åŸºç±»
     /// </summary>
-    public GComponent main;
-    /// <summary>
-    /// ½çÃæid
-    /// </summary>
-    public string id;
-    /// <summary>
-    /// ½çÃæÃû
-    /// </summary>
-    public string name;
-
-    /// <summary>
-    /// µ±Ç°ÀàµÄÀàĞÍ
-    /// </summary>
-    protected Type _type;
-
-    /// <summary>
-    /// ·´Éä·¶Î§±êÖ¾
-    /// </summary>
-    private readonly BindingFlags _flag = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static |
-                                          BindingFlags.Instance;
-
-    //----- ÄÚ½¨Ë½ÓĞ±äÁ¿ -----
-
-    /// <summary>
-    /// ÍÏ×§ÔªËØ×Öµä£¬ÓÃÓÚ±£´æÔªËØµÄÍÏ×§×´Ì¬
-    /// </summary>
-    private readonly Dictionary<string, bool> _dropDic = new Dictionary<string, bool>();
-
-    /// <summary>
-    /// ´úÀíÍÏ×§ÔªËØ
-    /// </summary>
-    private GameObject _copy;
-
-    /// <summary>
-    /// µ±Ç°´úÀíÍÏ×§½Å±¾
-    /// </summary>
-    private UIDrag _uiDrag;
-
-    /// <summary>
-    /// ÍÏ×§Êı¾İ
-    /// </summary>
-    private readonly ArrayList _dropData = new ArrayList();
-
-    /// <summary>
-    /// ¸¡¶¯´°¿Úid
-    /// </summary>
-    private int _floatId = 0;
-
-    /// <summary>
-    /// ¸¡¶¯´°¿Ú×Öµä£¬ÓÃÓÚ±£´æËùÓĞ¸¡¶¯´°¿Ú
-    /// </summary>
-    private Dictionary<string, BaseView> _floatViews = new Dictionary<string, BaseView>();
-
-    /// <summary>
-    /// ÕıÔÚÏÔÊ¾µÄĞü¸¡´°
-    /// </summary>
-    private BaseView _floatViewOnShow = null;
-
-    protected void Bind()
+    public class UIBase
     {
-        _type = GetType();
-        PropertyInfo[] props = _type.GetProperties(_flag);
+        /// <summary>
+        /// ç•Œé¢UIæ ¹å…ƒç´ 
+        /// </summary>
+        public GComponent main;
 
-        MethodInfo[] methods = _type.GetMethods(_flag);
+        /// <summary>
+        /// ç•Œé¢id
+        /// </summary>
+        public string id;
 
-        foreach (var method in methods)
+        /// <summary>
+        /// ç•Œé¢å
+        /// </summary>
+        public string name;
+
+        /// <summary>
+        /// å½“å‰ç±»çš„ç±»å‹
+        /// </summary>
+        protected Type _type;
+
+        /// <summary>
+        /// åå°„èŒƒå›´æ ‡å¿—
+        /// </summary>
+        private readonly BindingFlags _flag = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static |
+                                              BindingFlags.Instance;
+
+        //----- å†…å»ºç§æœ‰å˜é‡ -----
+
+        /// <summary>
+        /// æ‹–æ‹½å…ƒç´ å­—å…¸ï¼Œç”¨äºä¿å­˜å…ƒç´ çš„æ‹–æ‹½çŠ¶æ€
+        /// </summary>
+        private readonly Dictionary<string, bool> _dropDic = new Dictionary<string, bool>();
+
+        /// <summary>
+        /// ä»£ç†æ‹–æ‹½å…ƒç´ 
+        /// </summary>
+        private GameObject _copy;
+
+        /// <summary>
+        /// å½“å‰ä»£ç†æ‹–æ‹½è„šæœ¬
+        /// </summary>
+        private UIDrag _uiDrag;
+
+        /// <summary>
+        /// æ‹–æ‹½æ•°æ®
+        /// </summary>
+        private readonly ArrayList _dropData = new ArrayList();
+
+        /// <summary>
+        /// æµ®åŠ¨çª—å£id
+        /// </summary>
+        private int _floatId = 0;
+
+        /// <summary>
+        /// æµ®åŠ¨çª—å£å­—å…¸ï¼Œç”¨äºä¿å­˜æ‰€æœ‰æµ®åŠ¨çª—å£
+        /// </summary>
+        private Dictionary<string, BaseView> _floatViews = new Dictionary<string, BaseView>();
+
+        /// <summary>
+        /// æ­£åœ¨æ˜¾ç¤ºçš„æ‚¬æµ®çª—
+        /// </summary>
+        private BaseView _floatViewOnShow = null;
+
+        protected void Bind()
         {
-            var methodAttrs = method.GetCustomAttributes(true);
-            foreach (var attr in methodAttrs)
+            _type = GetType();
+            PropertyInfo[] props = _type.GetProperties(_flag);
+
+            MethodInfo[] methods = _type.GetMethods(_flag);
+
+            foreach (var method in methods)
             {
-                if (attr is UIActionBind)
+                var methodAttrs = method.GetCustomAttributes(true);
+                foreach (var attr in methodAttrs)
                 {
-                    BindAction(method, attr);
-                }
-                else if (attr is UIListenerBind)
-                {
-                    BindListener(method, attr);
-                }
-            }
-        }
-
-        foreach (var prop in props)
-        {
-            var propAttrs = prop.GetCustomAttributes(true);
-            foreach (var attr in propAttrs)
-            {
-                if (attr is UICompBind)
-                {
-                    BindComp(prop, attr);
-                }
-                else if (attr is UIDataBind)
-                {
-                    BindData(prop, attr);
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// °ó¶¨×é¼ş
-    /// </summary>
-    /// <param name="prop"></param>
-    /// <param name="attr"></param>
-    private void BindComp(PropertyInfo prop, object attr)
-    {
-        UICompBind uiBind = (UICompBind)attr;
-
-        switch (uiBind._type)
-        {
-            case UIType.Comp:
-                GComponent comp = FguiUtils.GetUI<GComponent>(main, uiBind._path);
-                prop.SetValue(this, comp);
-                break;
-            case UIType.TextField:
-                GTextField textField = FguiUtils.GetUI<GTextField>(main, uiBind._path);
-                prop.SetValue(this, textField);
-                break;
-            case UIType.TextInput:
-                GTextInput textInput = FguiUtils.GetUI<GTextInput>(main, uiBind._path);
-                prop.SetValue(this, textInput);
-                break;
-            case UIType.Image:
-                GImage image = FguiUtils.GetUI<GImage>(main, uiBind._path);
-                prop.SetValue(this, image);
-                break;
-            case UIType.Loader:
-                GLoader loader = FguiUtils.GetUI<GLoader>(main, uiBind._path);
-                prop.SetValue(this, loader);
-                break;
-            case UIType.List:
-                GList list = FguiUtils.GetUI<GList>(main, uiBind._path);
-                prop.SetValue(this, list);
-                break;
-            case UIType.Slider:
-                GSlider slider = FguiUtils.GetUI<GSlider>(main, uiBind._path);
-                prop.SetValue(this,slider);
-                break;
-            case UIType.ComboBox:
-                GComboBox comboBox = FguiUtils.GetUI<GComboBox>(main, uiBind._path);
-                prop.SetValue(this,comboBox);
-                break;
-        }
-    }
-
-    /// <summary>
-    /// °ó¶¨ ×é¼ş-Êı¾İ
-    /// </summary>
-    /// <param name="prop"></param>
-    /// <param name="attr"></param>
-    private void BindData(PropertyInfo prop, object attr)
-    {
-        UIDataBind uiBind = (UIDataBind)attr;
-
-        //»ñÈ¡Ë«Ïò°ó¶¨Î¯ÍĞ
-        var onValueChange = prop.PropertyType.GetField("_onValueChange", _flag);
-        var onUIChange = prop.PropertyType.GetField("_onUIChange", _flag);
-
-        var value = prop.GetValue(this);
-        if (value == null)
-        {
-            //³õÊ¼»¯µ±Ç°ÊôĞÔµÄÖµ
-            Type propType = prop.PropertyType;
-            if (propType == typeof(StringUIProp))
-            {
-                value = new StringUIProp();
-            }
-            else if (propType == typeof(DoubleUIProp))
-            {
-                value = new DoubleUIProp();
-            }
-            else
-            {
-                //´´½¨List
-                Type genericType = typeof(UIListProp<>).MakeGenericType(prop.PropertyType.GenericTypeArguments);
-                value = Activator.CreateInstance(genericType);
-            }
-
-            prop.SetValue(this, value);
-        }
-
-        switch (uiBind._type)
-        {
-            case UIType.TextField:
-                GTextField textField = FguiUtils.GetUI<GTextField>(main, uiBind._path);
-
-                void ActionText(string data)
-                {
-                    textField.text = data;
-                }
-
-                string ActionTextUI()
-                {
-                    return textField.text;
-                }
-
-                onValueChange?.SetValue(value, (Action<string>)ActionText);
-                onUIChange?.SetValue(value, (Func<string>)ActionTextUI);
-                break;
-            case UIType.TextInput:
-                GTextInput textInput = FguiUtils.GetUI<GTextInput>(main, uiBind._path);
-
-                void ActionInput(string data)
-                {
-                    textInput.text = data;
-                }
-
-                string ActionInputUI()
-                {
-                    return textInput.text;
-                }
-
-                onValueChange?.SetValue(value, (Action<string>)ActionInput);
-                onUIChange?.SetValue(value, (Func<string>)ActionInputUI);
-                break;
-            case UIType.Image:
-                GImage image = FguiUtils.GetUI<GImage>(main, uiBind._path);
-
-                void ActionImage(string data)
-                {
-                    image.icon = data;
-                }
-
-                string ActionImageUI()
-                {
-                    return image.icon;
-                }
-
-                onValueChange?.SetValue(value, (Action<string>)ActionImage);
-                onUIChange?.SetValue(value, (Func<string>)ActionImageUI);
-                break;
-            case UIType.Loader:
-                GLoader loader = FguiUtils.GetUI<GLoader>(main, uiBind._path);
-
-                void ActionLoader(string data)
-                {
-                    loader.url = data;
-
-                    // ConsoleUtils.Log("Ìæ»»Í¼Æ¬", loader?.url);
-                }
-
-                string ActionLoaderUI()
-                {
-                    return loader.url;
-                }
-
-                onValueChange?.SetValue(value, (Action<string>)ActionLoader);
-                onUIChange?.SetValue(value, (Func<string>)ActionLoaderUI);
-                break;
-            case UIType.List:
-                GList list = FguiUtils.GetUI<GList>(main, uiBind._path);
-
-                void ActionList(int data)
-                {
-                    list.SetVirtual();
-                    list.numItems = data;
-
-                    if (uiBind._extra.Length > 0)
+                    if (attr is UIActionBind)
                     {
-                        switch (uiBind._extra[0])
-                        {
-                            case "height":
-                                if (list.numChildren > 0)
-                                {
-                                    list.height = data * list.GetChildAt(0).height + list.lineGap * (data - 1) +
-                                                  list.margin.top + list.margin.bottom;
-                                }
-
-                                break;
-                            case "width":
-                                if (list.numChildren > 0)
-                                {
-                                    list.width = data * list.GetChildAt(0).width + list.columnGap * (data - 1) +
-                                                 list.margin.left + list.margin.right;
-                                }
-
-                                break;
-                        }
+                        BindAction(method, attr);
+                    }
+                    else if (attr is UIListenerBind)
+                    {
+                        BindListener(method, attr);
                     }
                 }
+            }
 
-                onValueChange?.SetValue(value, (Action<int>)ActionList);
-                break;
-            case UIType.Slider:
-                GSlider slider = FguiUtils.GetUI<GSlider>(main, uiBind._path);
-
-                void ActionSlider(double data)
+            foreach (var prop in props)
+            {
+                var propAttrs = prop.GetCustomAttributes(true);
+                foreach (var attr in propAttrs)
                 {
-                    slider.value = data;
-                }
-
-                double ActionSliderUI()
-                {
-                    return slider.value;
-                }
-
-                onValueChange?.SetValue(value, (Action<double>)ActionSlider);
-                onUIChange?.SetValue(value, (Func<double>)ActionSliderUI);
-                break;
-            case UIType.ComboBox:
-                GComboBox comboBox = FguiUtils.GetUI<GComboBox>(main, uiBind._path);
-
-                comboBox.items = uiBind._extra;
-
-                void ActionComboBox(double data)
-                {
-                    comboBox.selectedIndex = (int)data;
-                }
-
-                double ActionComboBoxUI()
-                {
-                    return comboBox.selectedIndex;
-                }
-
-                onValueChange?.SetValue(value, (Action<double>)ActionComboBox);
-                onUIChange?.SetValue(value, (Func<double>)ActionComboBoxUI);
-
-                break;
-        }
-    }
-
-    /// <summary>
-    /// °ó¶¨ ×é¼ş-ĞĞÎª
-    /// </summary>
-    /// <param name="method"></param>
-    /// <param name="attr"></param>
-    private void BindAction(MethodInfo method, object attr)
-    {
-        UIActionBind uiBind = (UIActionBind)attr;
-        GObject obj = FguiUtils.GetUI<GObject>(main, uiBind._path);
-        //»ñÈ¡·½·¨µÄ²ÎÊı
-        ParameterInfo[] methodParamsList;
-        bool isAgent;
-        Delegate action;
-
-        switch (uiBind._type)
-        {
-            case UIAction.Click:
-                methodParamsList = method.GetParameters();
-                if (methodParamsList.Length == 0)
-                {
-                    action = Delegate.CreateDelegate(typeof(EventCallback0), this, method);
-                    obj.onClick.Set((EventCallback0)action);
-                }
-                else
-                {
-                    action = Delegate.CreateDelegate(typeof(EventCallback1), this, method);
-                    obj.onClick.Set((EventCallback1)action);
-                }
-
-                break;
-            case UIAction.ListRender:
-                action = Delegate.CreateDelegate(typeof(ListItemRenderer), this, method);
-                obj.asList.itemRenderer = (ListItemRenderer)action;
-                break;
-            case UIAction.ListProvider:
-                action = Delegate.CreateDelegate(typeof(ListItemProvider), this, method);
-                obj.asList.itemProvider = (ListItemProvider)action;
-                break;
-            case UIAction.ListClick:
-                methodParamsList = method.GetParameters();
-                if (methodParamsList.Length == 0)
-                {
-                    action = Delegate.CreateDelegate(typeof(EventCallback0), this, method);
-                    obj.asList.onClickItem.Set((EventCallback0)action);
-                }
-                else
-                {
-                    action = Delegate.CreateDelegate(typeof(EventCallback1), this, method);
-                    obj.asList.onClickItem.Set((EventCallback1)action);
-                }
-
-                break;
-            case UIAction.DragStart:
-                obj.draggable = true;
-                isAgent = uiBind._extra.Length == 0 || uiBind._extra[0] == "Self";
-                SetDragListener(obj, 0, method, isAgent);
-                break;
-            case UIAction.DragHold:
-                obj.draggable = true;
-                isAgent = uiBind._extra.Length == 0 || uiBind._extra[0] == "Self";
-                SetDragListener(obj, 1, method, isAgent);
-                break;
-            case UIAction.DragEnd:
-                obj.draggable = true;
-                isAgent = uiBind._extra.Length == 0 || uiBind._extra[0] != "Self";
-                SetDragListener(obj, 2, method, isAgent);
-                break;
-            case UIAction.Drop:
-                action = (Action<object>)Delegate.CreateDelegate(typeof(Action<object>), this, method);
-                _dropDic[obj.id] = true;
-                EventManager.AddListening(obj.id, "OnDrop_" + obj.id, data => ((Action<object>)action).Invoke(data));
-                break;
-            case UIAction.Hover:
-                methodParamsList = method.GetParameters();
-                if (methodParamsList.Length == 0)
-                {
-                    action = Delegate.CreateDelegate(typeof(EventCallback0), this, method);
-                    obj.onRollOver.Set((EventCallback0)action);
-                }
-                else
-                {
-                    action = Delegate.CreateDelegate(typeof(EventCallback1), this, method);
-                    obj.onRollOver.Set((EventCallback1)action);
-                }
-
-                obj.onRollOver.Add(() =>
-                {
-                    if (_floatViewOnShow != null)
+                    if (attr is UICompBind)
                     {
-                        if (_floatViewOnShow.main.displayObject.gameObject.GetComponent<UIFollow>() != null)
-                        {
-                            _floatViewOnShow.main.xy = FguiUtils.GetMousePosition();
-                        }
-                        else
-                        {
-                            _floatViewOnShow.main.xy = obj.xy;
-                        }
-
-                        _floatViewOnShow.Show();
+                        BindComp(prop, attr);
                     }
-                });
+                    else if (attr is UIDataBind)
+                    {
+                        BindData(prop, attr);
+                    }
+                }
+            }
+        }
 
-                //ÍË³öÒş²Ø
-                obj.onRollOut.Set(() =>
+        /// <summary>
+        /// ç»‘å®šç»„ä»¶
+        /// </summary>
+        /// <param name="prop"></param>
+        /// <param name="attr"></param>
+        private void BindComp(PropertyInfo prop, object attr)
+        {
+            UICompBind uiBind = (UICompBind)attr;
+
+            switch (uiBind._type)
+            {
+                case UIType.Comp:
+                    GComponent comp = FguiUtils.GetUI<GComponent>(main, uiBind._path);
+                    prop.SetValue(this, comp);
+                    break;
+                case UIType.TextField:
+                    GTextField textField = FguiUtils.GetUI<GTextField>(main, uiBind._path);
+                    prop.SetValue(this, textField);
+                    break;
+                case UIType.TextInput:
+                    GTextInput textInput = FguiUtils.GetUI<GTextInput>(main, uiBind._path);
+                    prop.SetValue(this, textInput);
+                    break;
+                case UIType.Image:
+                    GImage image = FguiUtils.GetUI<GImage>(main, uiBind._path);
+                    prop.SetValue(this, image);
+                    break;
+                case UIType.Loader:
+                    GLoader loader = FguiUtils.GetUI<GLoader>(main, uiBind._path);
+                    prop.SetValue(this, loader);
+                    break;
+                case UIType.List:
+                    GList list = FguiUtils.GetUI<GList>(main, uiBind._path);
+                    prop.SetValue(this, list);
+                    break;
+                case UIType.Slider:
+                    GSlider slider = FguiUtils.GetUI<GSlider>(main, uiBind._path);
+                    prop.SetValue(this, slider);
+                    break;
+                case UIType.ComboBox:
+                    GComboBox comboBox = FguiUtils.GetUI<GComboBox>(main, uiBind._path);
+                    prop.SetValue(this, comboBox);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// ç»‘å®š ç»„ä»¶-æ•°æ®
+        /// </summary>
+        /// <param name="prop"></param>
+        /// <param name="attr"></param>
+        private void BindData(PropertyInfo prop, object attr)
+        {
+            UIDataBind uiBind = (UIDataBind)attr;
+
+            //è·å–åŒå‘ç»‘å®šå§”æ‰˜
+            var onValueChange = prop.PropertyType.GetField("_onValueChange", _flag);
+            var onUIChange = prop.PropertyType.GetField("_onUIChange", _flag);
+
+            var value = prop.GetValue(this);
+            if (value == null)
+            {
+                //åˆå§‹åŒ–å½“å‰å±æ€§çš„å€¼
+                Type propType = prop.PropertyType;
+                if (propType == typeof(StringUIProp))
                 {
-                    _floatViewOnShow?.Hide();
-                    _floatViewOnShow = null;
-                });
-                break;
-            case UIAction.Slider:
-                methodParamsList = method.GetParameters();
-                if (methodParamsList.Length == 0)
+                    value = new StringUIProp();
+                }
+                else if (propType == typeof(DoubleUIProp))
                 {
-                    action = Delegate.CreateDelegate(typeof(EventCallback0), this, method);
-                    obj.asSlider.onChanged.Set((EventCallback0)action);
+                    value = new DoubleUIProp();
                 }
                 else
                 {
-                    action = Delegate.CreateDelegate(typeof(EventCallback1), this, method);
-                    obj.asSlider.onChanged.Set((EventCallback1)action);
+                    //åˆ›å»ºList
+                    Type genericType = typeof(UIListProp<>).MakeGenericType(prop.PropertyType.GenericTypeArguments);
+                    value = Activator.CreateInstance(genericType);
                 }
 
-                break;
-            case UIAction.ComboBox:
-                methodParamsList = method.GetParameters();
-                if (methodParamsList.Length == 0)
-                {
-                    action = Delegate.CreateDelegate(typeof(EventCallback0), this, method);
-                    obj.asComboBox.onChanged.Set((EventCallback0)action);
-                }
-                else
-                {
-                    action = Delegate.CreateDelegate(typeof(EventCallback1), this, method);
-                    obj.asComboBox.onChanged.Set((EventCallback1)action);
-                }
-                break;
+                prop.SetValue(this, value);
+            }
+
+            switch (uiBind._type)
+            {
+                case UIType.TextField:
+                    GTextField textField = FguiUtils.GetUI<GTextField>(main, uiBind._path);
+
+                    void ActionText(string data)
+                    {
+                        textField.text = data;
+                    }
+
+                    string ActionTextUI()
+                    {
+                        return textField.text;
+                    }
+
+                    onValueChange?.SetValue(value, (Action<string>)ActionText);
+                    onUIChange?.SetValue(value, (Func<string>)ActionTextUI);
+                    break;
+                case UIType.TextInput:
+                    GTextInput textInput = FguiUtils.GetUI<GTextInput>(main, uiBind._path);
+
+                    void ActionInput(string data)
+                    {
+                        textInput.text = data;
+                    }
+
+                    string ActionInputUI()
+                    {
+                        return textInput.text;
+                    }
+
+                    onValueChange?.SetValue(value, (Action<string>)ActionInput);
+                    onUIChange?.SetValue(value, (Func<string>)ActionInputUI);
+                    break;
+                case UIType.Image:
+                    GImage image = FguiUtils.GetUI<GImage>(main, uiBind._path);
+
+                    void ActionImage(string data)
+                    {
+                        image.icon = data;
+                    }
+
+                    string ActionImageUI()
+                    {
+                        return image.icon;
+                    }
+
+                    onValueChange?.SetValue(value, (Action<string>)ActionImage);
+                    onUIChange?.SetValue(value, (Func<string>)ActionImageUI);
+                    break;
+                case UIType.Loader:
+                    GLoader loader = FguiUtils.GetUI<GLoader>(main, uiBind._path);
+
+                    void ActionLoader(string data)
+                    {
+                        loader.url = data;
+
+                        // ConsoleUtils.Log("æ›¿æ¢å›¾ç‰‡", loader?.url);
+                    }
+
+                    string ActionLoaderUI()
+                    {
+                        return loader.url;
+                    }
+
+                    onValueChange?.SetValue(value, (Action<string>)ActionLoader);
+                    onUIChange?.SetValue(value, (Func<string>)ActionLoaderUI);
+                    break;
+                case UIType.List:
+                    GList list = FguiUtils.GetUI<GList>(main, uiBind._path);
+
+                    void ActionList(int data)
+                    {
+                        list.SetVirtual();
+                        list.numItems = data;
+
+                        UIAdaptive uiAdaptive = prop.GetCustomAttribute<UIAdaptive>();
+
+                        if (uiAdaptive != null)
+                        {
+                            switch (uiAdaptive.GetAdaptiveType())
+                            {
+                                case AdaptiveType.Height:
+                                    if (list.numChildren > 0)
+                                    {
+                                        list.height = data * list.GetChildAt(0).height + list.lineGap * (data - 1) +
+                                                      list.margin.top + list.margin.bottom;
+                                    }
+
+                                    break;
+                                case AdaptiveType.Width:
+                                    if (list.numChildren > 0)
+                                    {
+                                        list.width = data * list.GetChildAt(0).width + list.columnGap * (data - 1) +
+                                                     list.margin.left + list.margin.right;
+                                    }
+
+                                    break;
+                            }
+                        }
+                    }
+
+                    onValueChange?.SetValue(value, (Action<int>)ActionList);
+                    break;
+                case UIType.Slider:
+                    GSlider slider = FguiUtils.GetUI<GSlider>(main, uiBind._path);
+
+                    void ActionSlider(double data)
+                    {
+                        slider.value = data;
+                    }
+
+                    double ActionSliderUI()
+                    {
+                        return slider.value;
+                    }
+
+                    onValueChange?.SetValue(value, (Action<double>)ActionSlider);
+                    onUIChange?.SetValue(value, (Func<double>)ActionSliderUI);
+                    break;
+                case UIType.ComboBox:
+                    GComboBox comboBox = FguiUtils.GetUI<GComboBox>(main, uiBind._path);
+
+                    UIOptions uiOptions = prop.GetCustomAttribute<UIOptions>();
+                    
+                    comboBox.items = uiOptions.GetOptions();
+
+                    void ActionComboBox(double data)
+                    {
+                        comboBox.selectedIndex = (int)data;
+                    }
+
+                    double ActionComboBoxUI()
+                    {
+                        return comboBox.selectedIndex;
+                    }
+
+                    onValueChange?.SetValue(value, (Action<double>)ActionComboBox);
+                    onUIChange?.SetValue(value, (Func<double>)ActionComboBoxUI);
+
+                    break;
+            }
         }
-    }
 
-    /// <summary>
-    /// °ó¶¨¼àÌı
-    /// </summary>
-    /// <param name="method"></param>
-    /// <param name="attr"></param>
-    private void BindListener(MethodInfo method, object attr)
-    {
-        UIListenerBind uiBind = (UIListenerBind)attr;
-        var eventFunc = Delegate.CreateDelegate(typeof(Action<ArrayList>), this, method);
-        EventManager.AddListening(id, uiBind._name, (Action<ArrayList>)eventFunc);
-    }
-
-
-    private void ClearDropData()
-    {
-        _dropData.Clear();
-    }
-
-    /// <summary>
-    /// Ìí¼Ó·ÅÖÃÊı¾İ
-    /// </summary>
-    /// <param name="data"></param>
-    protected void AddDropData(object data)
-    {
-        _dropData.Add(data);
-    }
-
-    /// <summary>
-    /// ÉèÖÃÍÏ×§£¬ÓÃÓÚlistÄÚÔªËØ
-    /// </summary>
-    /// <param name="type"></param>
-    /// <param name="action"></param>
-    /// <param name="obj"></param>
-    protected void SetDrag(UIAction type, GObject obj, Action dragAction)
-    {
-        obj.draggable = true;
-        Action action = () =>
+        /// <summary>
+        /// ç»‘å®š ç»„ä»¶-è¡Œä¸º
+        /// </summary>
+        /// <param name="method"></param>
+        /// <param name="attr"></param>
+        private void BindAction(MethodInfo method, object attr)
         {
-            //Í£Ö¹±¾´Î¹ö¶¯
-            obj.parent.asList.scrollPane.CancelDragging();
-            dragAction();
-        };
-        switch (type)
-        {
-            case UIAction.DragStart:
-                SetDragListener(obj, 0, action);
-                break;
-            case UIAction.DragHold:
-                SetDragListener(obj, 1, action);
-                break;
-            case UIAction.DragEnd:
-                SetDragListener(obj, 2, action);
-                break;
+            UIActionBind uiBind = (UIActionBind)attr;
+            GObject obj = FguiUtils.GetUI<GObject>(main, uiBind._path);
+            //è·å–æ–¹æ³•çš„å‚æ•°
+            ParameterInfo[] methodParamsList;
+            bool isAgent;
+            Delegate action;
+
+            UICondition condition = method.GetCustomAttribute<UICondition>();
+
+            switch (uiBind._type)
+            {
+                case UIAction.Click:
+                    methodParamsList = method.GetParameters();
+                    if (methodParamsList.Length == 0)
+                    {
+                        action = Delegate.CreateDelegate(typeof(EventCallback0), this, method);
+                        obj.onClick.Set((EventCallback0)action);
+                    }
+                    else
+                    {
+                        action = Delegate.CreateDelegate(typeof(EventCallback1), this, method);
+                        obj.onClick.Set((EventCallback1)action);
+                    }
+
+                    break;
+                case UIAction.ListRender:
+                    action = Delegate.CreateDelegate(typeof(ListItemRenderer), this, method);
+                    obj.asList.itemRenderer = (ListItemRenderer)action;
+                    break;
+                case UIAction.ListProvider:
+                    action = Delegate.CreateDelegate(typeof(ListItemProvider), this, method);
+                    obj.asList.itemProvider = (ListItemProvider)action;
+                    break;
+                case UIAction.ListClick:
+                    methodParamsList = method.GetParameters();
+                    if (methodParamsList.Length == 0)
+                    {
+                        action = Delegate.CreateDelegate(typeof(EventCallback0), this, method);
+                        obj.asList.onClickItem.Set((EventCallback0)action);
+                    }
+                    else
+                    {
+                        action = Delegate.CreateDelegate(typeof(EventCallback1), this, method);
+                        obj.asList.onClickItem.Set((EventCallback1)action);
+                    }
+
+                    break;
+                case UIAction.DragStart:
+                    obj.draggable = true;
+                    isAgent = condition == null || !condition.GetBool();
+                    SetDragListener(obj, 0, method, isAgent);
+                    break;
+                case UIAction.DragHold:
+                    obj.draggable = true;
+                    isAgent = condition == null || !condition.GetBool();
+                    SetDragListener(obj, 1, method, isAgent);
+                    break;
+                case UIAction.DragEnd:
+                    obj.draggable = true;
+                    isAgent = condition == null || !condition.GetBool();
+                    SetDragListener(obj, 2, method, isAgent);
+                    break;
+                case UIAction.Drop:
+                    action = (Action<object>)Delegate.CreateDelegate(typeof(Action<object>), this, method);
+                    _dropDic[obj.id] = true;
+                    EventManager.AddListening(obj.id, "OnDrop_" + obj.id,
+                        data => ((Action<object>)action).Invoke(data));
+                    break;
+                case UIAction.Hover:
+                    methodParamsList = method.GetParameters();
+                    if (methodParamsList.Length == 0)
+                    {
+                        action = Delegate.CreateDelegate(typeof(EventCallback0), this, method);
+                        obj.onRollOver.Set((EventCallback0)action);
+                    }
+                    else
+                    {
+                        action = Delegate.CreateDelegate(typeof(EventCallback1), this, method);
+                        obj.onRollOver.Set((EventCallback1)action);
+                    }
+
+                    obj.onRollOver.Add(() =>
+                    {
+                        if (_floatViewOnShow != null)
+                        {
+                            if (_floatViewOnShow.main.displayObject.gameObject.GetComponent<UIFollow>() != null)
+                            {
+                                _floatViewOnShow.main.xy = FguiUtils.GetMousePosition();
+                            }
+                            else
+                            {
+                                _floatViewOnShow.main.xy = obj.xy;
+                            }
+
+                            _floatViewOnShow.Show();
+                        }
+                    });
+
+                    //é€€å‡ºéšè—
+                    obj.onRollOut.Set(() =>
+                    {
+                        _floatViewOnShow?.Hide();
+                        _floatViewOnShow = null;
+                    });
+                    break;
+                case UIAction.Slider:
+                    methodParamsList = method.GetParameters();
+                    if (methodParamsList.Length == 0)
+                    {
+                        action = Delegate.CreateDelegate(typeof(EventCallback0), this, method);
+                        obj.asSlider.onChanged.Set((EventCallback0)action);
+                    }
+                    else
+                    {
+                        action = Delegate.CreateDelegate(typeof(EventCallback1), this, method);
+                        obj.asSlider.onChanged.Set((EventCallback1)action);
+                    }
+
+                    break;
+                case UIAction.ComboBox:
+                    methodParamsList = method.GetParameters();
+                    if (methodParamsList.Length == 0)
+                    {
+                        action = Delegate.CreateDelegate(typeof(EventCallback0), this, method);
+                        obj.asComboBox.onChanged.Set((EventCallback0)action);
+                    }
+                    else
+                    {
+                        action = Delegate.CreateDelegate(typeof(EventCallback1), this, method);
+                        obj.asComboBox.onChanged.Set((EventCallback1)action);
+                    }
+
+                    break;
+            }
         }
-    }
 
-    protected void SetDrop(GObject obj, Action<object> action)
-    {
-        _dropDic[obj.id] = true;
-        EventManager.AddListening(obj.id, "OnDrop_" + obj.id, data => action(_dropData));
-    }
+        /// <summary>
+        /// ç»‘å®šç›‘å¬
+        /// </summary>
+        /// <param name="method"></param>
+        /// <param name="attr"></param>
+        private void BindListener(MethodInfo method, object attr)
+        {
+            UIListenerBind uiBind = (UIListenerBind)attr;
+            var eventFunc = Delegate.CreateDelegate(typeof(Action<ArrayList>), this, method);
+            EventManager.AddListening(id, uiBind._name, (Action<ArrayList>)eventFunc);
+        }
 
-    /// <summary>
-    /// Ìí¼Ó·ÅÖÃÊı¾İ
-    /// </summary>
-    /// <param name="datas"></param>
-    protected void AddDropData(params object[] datas)
-    {
-        foreach (var data in datas)
+
+        private void ClearDropData()
+        {
+            _dropData.Clear();
+        }
+
+        /// <summary>
+        /// æ·»åŠ æ”¾ç½®æ•°æ®
+        /// </summary>
+        /// <param name="data"></param>
+        protected void AddDropData(object data)
         {
             _dropData.Add(data);
         }
-    }
 
-    /// <summary>
-    /// Õ¹Ê¾Ğü¸¡´°
-    /// </summary>
-    /// <param name="name">Ğü¸¡´°Ãû</param>
-    /// <param name="follow">ÊÇ·ñ¸úËæ</param>
-    /// <typeparam name="T"></typeparam>
-    protected void ShowFloatView<T>(string name, bool follow = false) where T : BaseView, new()
-    {
-        BaseView view;
-        _floatViews.TryGetValue(name, out view);
-        if (view == null)
+        /// <summary>
+        /// è®¾ç½®æ‹–æ‹½ï¼Œç”¨äºlistå†…å…ƒç´ 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="action"></param>
+        /// <param name="obj"></param>
+        protected void SetDrag(UIAction type, GObject obj, Action dragAction)
         {
-            view = new T();
-            string uiName = typeof(T).Name;
-            view.id = "float_view_" + _floatId++;
-            view.name = name;
-            view.main = UIPackage.CreateObject("Test", uiName).asCom;
-            view.main.touchable = false;
-
-            if (follow)
+            obj.draggable = true;
+            Action action = () =>
             {
-                UIFollow uiFollow = view.main.displayObject.gameObject.AddComponent<UIFollow>();
-                uiFollow.SetObj(view.main, main);
+                //åœæ­¢æœ¬æ¬¡æ»šåŠ¨
+                obj.parent.asList.scrollPane.CancelDragging();
+                dragAction();
+            };
+            switch (type)
+            {
+                case UIAction.DragStart:
+                    SetDragListener(obj, 0, action);
+                    break;
+                case UIAction.DragHold:
+                    SetDragListener(obj, 1, action);
+                    break;
+                case UIAction.DragEnd:
+                    SetDragListener(obj, 2, action);
+                    break;
             }
-
-            main.AddChild(view.main);
-            view.OnAwake();
-            _floatViews.Add(name, view);
         }
 
-        _floatViewOnShow = view;
-    }
+        protected void SetDrop(GObject obj, Action<object> action)
+        {
+            _dropDic[obj.id] = true;
+            EventManager.AddListening(obj.id, "OnDrop_" + obj.id, data => action(_dropData));
+        }
 
-    /// <summary>
-    /// Ìí¼ÓÍÏ×§¼àÌı´úÀí
-    /// </summary>
-    /// <param name="obj">ÍÏ×§UI</param>
-    /// <param name="type">ÍÏ×§ÀàĞÍ 0:start,1:hold,2:end</param>
-    /// <param name="method">ÍÏ×§»Øµ÷</param>
-    /// <param name="isAgent">ÊÇ·ñ´úÀíÍÏ×§</param>
-    private void SetDragListener(GObject obj, int type, MethodInfo method, bool isAgent)
-    {
-        ParameterInfo[] methodParamsList = method.GetParameters();
+        /// <summary>
+        /// æ·»åŠ æ”¾ç½®æ•°æ®
+        /// </summary>
+        /// <param name="datas"></param>
+        protected void AddDropData(params object[] datas)
+        {
+            foreach (var data in datas)
+            {
+                _dropData.Add(data);
+            }
+        }
 
-        var drag = Delegate.CreateDelegate(
-            methodParamsList.Length == 0 ? typeof(EventCallback0) : typeof(EventCallback1), this, method);
+        /// <summary>
+        /// å±•ç¤ºæ‚¬æµ®çª—
+        /// </summary>
+        /// <param name="name">æ‚¬æµ®çª—å</param>
+        /// <param name="follow">æ˜¯å¦è·Ÿéš</param>
+        /// <typeparam name="T"></typeparam>
+        protected void ShowFloatView<T>(string name, bool follow = false) where T : BaseView, new()
+        {
+            BaseView view;
+            _floatViews.TryGetValue(name, out view);
+            if (view == null)
+            {
+                view = new T();
+                string uiName = typeof(T).Name;
+                view.id = "float_view_" + _floatId++;
+                view.name = name;
+                view.main = UIPackage.CreateObject("Test", uiName).asCom;
+                view.main.touchable = false;
 
-        if (isAgent)
+                if (follow)
+                {
+                    UIFollow uiFollow = view.main.displayObject.gameObject.AddComponent<UIFollow>();
+                    uiFollow.SetObj(view.main, main);
+                }
+
+                main.AddChild(view.main);
+                view.OnAwake();
+                _floatViews.Add(name, view);
+            }
+
+            _floatViewOnShow = view;
+        }
+
+        /// <summary>
+        /// æ·»åŠ æ‹–æ‹½ç›‘å¬ä»£ç†
+        /// </summary>
+        /// <param name="obj">æ‹–æ‹½UI</param>
+        /// <param name="type">æ‹–æ‹½ç±»å‹ 0:start,1:hold,2:end</param>
+        /// <param name="method">æ‹–æ‹½å›è°ƒ</param>
+        /// <param name="isAgent">æ˜¯å¦ä»£ç†æ‹–æ‹½</param>
+        private void SetDragListener(GObject obj, int type, MethodInfo method, bool isAgent)
+        {
+            ParameterInfo[] methodParamsList = method.GetParameters();
+
+            var drag = Delegate.CreateDelegate(
+                methodParamsList.Length == 0 ? typeof(EventCallback0) : typeof(EventCallback1), this, method);
+
+            if (isAgent)
+            {
+                obj.onDragStart.Add(context =>
+                {
+                    context.PreventDefault();
+                    //å¤åˆ¶UI
+                    GameObject origin = obj.displayObject.gameObject;
+                    _copy = GameObject.Instantiate(origin, main.displayObject.gameObject.transform, true);
+                    CompClone(_copy.transform, origin.transform);
+
+                    //åŒæ­¥å±æ€§
+                    _copy.transform.localPosition = origin.transform.localPosition;
+                    _copy.transform.localScale = origin.transform.localScale;
+                    _copy.transform.localRotation = origin.transform.localRotation;
+
+                    //æ‹–æ‹½è·Ÿéšé€»è¾‘
+                    _uiDrag = _copy.AddComponent<UIDrag>();
+                    _uiDrag.SetOriginMousePos();
+
+                    Action action = () =>
+                    {
+                        //æ¸…é™¤æ”¾ç½®æ•°æ®
+                        ClearDropData();
+                        if (methodParamsList.Length == 0)
+                        {
+                            ((EventCallback0)drag).Invoke();
+                        }
+                        else
+                        {
+                            ((EventCallback1)drag).Invoke(null);
+                        }
+                    };
+
+                    switch (type)
+                    {
+                        case 0:
+                            _uiDrag.SetStart(action);
+                            break;
+                        case 1:
+                            _uiDrag.SetUpdate(action);
+                            break;
+                        case 2:
+                            _uiDrag.SetEnd(action);
+                            break;
+                    }
+
+                    AddDropListener(obj);
+                    RemoveDragAgent();
+                });
+            }
+            else
+            {
+                if (methodParamsList.Length == 0)
+                {
+                    EventCallback0 action = () =>
+                    {
+                        //æ¸…é™¤æ”¾ç½®æ•°æ®
+                        ClearDropData();
+                        ((EventCallback0)drag).Invoke();
+                    };
+                    //ç›‘å¬é¼ æ ‡æ‹–æ‹½
+                    switch (type)
+                    {
+                        case 0:
+                            obj.onDragStart.Set(action);
+                            break;
+                        case 1:
+                            obj.onDragMove.Set(action);
+                            break;
+                        case 2:
+                            obj.onDragEnd.Set(action);
+                            break;
+                    }
+                }
+                else
+                {
+                    EventCallback1 action = context =>
+                    {
+                        //æ¸…é™¤æ”¾ç½®æ•°æ®
+                        ClearDropData();
+                        ((EventCallback1)drag).Invoke(context);
+                    };
+                    //ç›‘å¬é¼ æ ‡æ‹–æ‹½
+                    switch (type)
+                    {
+                        case 0:
+                            obj.onDragStart.Set(action);
+                            break;
+                        case 1:
+                            obj.onDragMove.Set(action);
+                            break;
+                        case 2:
+                            obj.onDragEnd.Set(action);
+                            break;
+                    }
+                }
+
+                AddDropListener(obj);
+            }
+        }
+
+        /// <summary>
+        /// è®¾ç½®æ‹–æ‹½ç›‘å¬
+        /// </summary>
+        /// <param name="obj">æ‹–æ‹½UI</param>
+        /// <param name="type">æ‹–æ‹½ç±»å‹ 0:start,1:hold,2:end</param>
+        /// <param name="dragAction">æ‹–æ‹½å›è°ƒ</param>
+        private void SetDragListener(GObject obj, int type, Action dragAction)
         {
             obj.onDragStart.Add(context =>
             {
                 context.PreventDefault();
-                //¸´ÖÆUI
+                //å¤åˆ¶UI
                 GameObject origin = obj.displayObject.gameObject;
                 _copy = GameObject.Instantiate(origin, main.displayObject.gameObject.transform, true);
                 CompClone(_copy.transform, origin.transform);
 
-                //Í¬²½ÊôĞÔ
-                _copy.transform.localPosition = origin.transform.localPosition;
+                //åŒæ­¥å±æ€§
+                _copy.transform.position = origin.transform.position;
                 _copy.transform.localScale = origin.transform.localScale;
-                _copy.transform.localRotation = origin.transform.localRotation;
+                _copy.transform.rotation = origin.transform.rotation;
 
-                //ÍÏ×§¸úËæÂß¼­
+                //æ‹–æ‹½è·Ÿéšé€»è¾‘
                 _uiDrag = _copy.AddComponent<UIDrag>();
                 _uiDrag.SetOriginMousePos();
 
                 Action action = () =>
                 {
-                    //Çå³ı·ÅÖÃÊı¾İ
+                    //æ¸…é™¤æ”¾ç½®æ•°æ®
                     ClearDropData();
-                    if (methodParamsList.Length == 0)
-                    {
-                        ((EventCallback0)drag).Invoke();
-                    }
-                    else
-                    {
-                        ((EventCallback1)drag).Invoke(null);
-                    }
+                    dragAction.Invoke();
                 };
 
                 switch (type)
@@ -643,197 +755,98 @@ public class UIBase
                 RemoveDragAgent();
             });
         }
-        else
+
+        /// <summary>
+        /// æ·»åŠ æ”¾ç½®ç›‘å¬
+        /// </summary>
+        /// <param name="obj">æ”¾ç½®UI</param>
+        private void AddDropListener(GObject obj)
         {
-            if (methodParamsList.Length == 0)
+            if (_uiDrag)
             {
-                EventCallback0 action = () =>
+                _uiDrag.AddEnd(() =>
                 {
-                    //Çå³ı·ÅÖÃÊı¾İ
-                    ClearDropData();
-                    ((EventCallback0)drag).Invoke();
-                };
-                //¼àÌıÊó±êÍÏ×§
-                switch (type)
-                {
-                    case 0:
-                        obj.onDragStart.Set(action);
-                        break;
-                    case 1:
-                        obj.onDragMove.Set(action);
-                        break;
-                    case 2:
-                        obj.onDragEnd.Set(action);
-                        break;
-                }
+                    GObject target = GRoot.inst.touchTarget;
+                    while (target != null)
+                    {
+                        if (_dropDic.ContainsKey(target.id))
+                        {
+                            EventManager.TriggerEvent("OnDrop_" + target.id, _dropData);
+                            return;
+                        }
+
+                        target = target.parent;
+                    }
+                });
             }
             else
             {
-                EventCallback1 action = context =>
+                obj.onDragEnd.Add(() =>
                 {
-                    //Çå³ı·ÅÖÃÊı¾İ
-                    ClearDropData();
-                    ((EventCallback1)drag).Invoke(context);
-                };
-                //¼àÌıÊó±êÍÏ×§
-                switch (type)
-                {
-                    case 0:
-                        obj.onDragStart.Set(action);
-                        break;
-                    case 1:
-                        obj.onDragMove.Set(action);
-                        break;
-                    case 2:
-                        obj.onDragEnd.Set(action);
-                        break;
-                }
-            }
-
-            AddDropListener(obj);
-        }
-    }
-
-    /// <summary>
-    /// ÉèÖÃÍÏ×§¼àÌı
-    /// </summary>
-    /// <param name="obj">ÍÏ×§UI</param>
-    /// <param name="type">ÍÏ×§ÀàĞÍ 0:start,1:hold,2:end</param>
-    /// <param name="dragAction">ÍÏ×§»Øµ÷</param>
-    private void SetDragListener(GObject obj, int type, Action dragAction)
-    {
-        obj.onDragStart.Add(context =>
-        {
-            context.PreventDefault();
-            //¸´ÖÆUI
-            GameObject origin = obj.displayObject.gameObject;
-            _copy = GameObject.Instantiate(origin, main.displayObject.gameObject.transform, true);
-            CompClone(_copy.transform, origin.transform);
-
-            //Í¬²½ÊôĞÔ
-            _copy.transform.position = origin.transform.position;
-            _copy.transform.localScale = origin.transform.localScale;
-            _copy.transform.rotation = origin.transform.rotation;
-
-            //ÍÏ×§¸úËæÂß¼­
-            _uiDrag = _copy.AddComponent<UIDrag>();
-            _uiDrag.SetOriginMousePos();
-
-            Action action = () =>
-            {
-                //Çå³ı·ÅÖÃÊı¾İ
-                ClearDropData();
-                dragAction.Invoke();
-            };
-
-            switch (type)
-            {
-                case 0:
-                    _uiDrag.SetStart(action);
-                    break;
-                case 1:
-                    _uiDrag.SetUpdate(action);
-                    break;
-                case 2:
-                    _uiDrag.SetEnd(action);
-                    break;
-            }
-
-            AddDropListener(obj);
-            RemoveDragAgent();
-        });
-    }
-
-    /// <summary>
-    /// Ìí¼Ó·ÅÖÃ¼àÌı
-    /// </summary>
-    /// <param name="obj">·ÅÖÃUI</param>
-    private void AddDropListener(GObject obj)
-    {
-        if (_uiDrag)
-        {
-            _uiDrag.AddEnd(() =>
-            {
-                GObject target = GRoot.inst.touchTarget;
-                while (target != null)
-                {
-                    if (_dropDic.ContainsKey(target.id))
+                    GObject target = GRoot.inst.touchTarget;
+                    while (target != null)
                     {
-                        EventManager.TriggerEvent("OnDrop_" + target.id, _dropData);
-                        return;
-                    }
+                        if (_dropDic.ContainsKey(target.id))
+                        {
+                            EventManager.TriggerEvent("OnDrop_" + target.id, _dropData);
+                            return;
+                        }
 
-                    target = target.parent;
-                }
-            });
+                        target = target.parent;
+                    }
+                });
+            }
         }
-        else
+
+        /// <summary>
+        /// ç§»é™¤æ‹–æ‹½ç›‘å¬ä»£ç†
+        /// </summary>
+        private void RemoveDragAgent()
         {
-            obj.onDragEnd.Add(() =>
+            if (_uiDrag)
             {
-                GObject target = GRoot.inst.touchTarget;
-                while (target != null)
+                _uiDrag.AddEnd(() =>
                 {
-                    if (_dropDic.ContainsKey(target.id))
-                    {
-                        EventManager.TriggerEvent("OnDrop_" + target.id, _dropData);
-                        return;
-                    }
-
-                    target = target.parent;
-                }
-            });
+                    _copy = null;
+                    _uiDrag = null;
+                });
+            }
         }
-    }
 
-    /// <summary>
-    /// ÒÆ³ıÍÏ×§¼àÌı´úÀí
-    /// </summary>
-    private void RemoveDragAgent()
-    {
-        if (_uiDrag)
+        /// <summary>
+        /// ä»£ç†ç»„ä»¶å…‹éš†åŠå¤„ç†
+        /// </summary>
+        /// <param name="transCopy">å…‹éš†ä½“transform</param>
+        /// <param name="transOrigin">åŸå‹transform</param>
+        private void CompClone(Transform transCopy, Transform transOrigin)
         {
-            _uiDrag.AddEnd(() =>
+            MeshFilter filter = transCopy.GetComponent<MeshFilter>();
+            MeshRenderer renderer = transCopy.GetComponent<MeshRenderer>();
+            if (filter)
             {
-                _copy = null;
-                _uiDrag = null;
-            });
-        }
-    }
-
-    /// <summary>
-    /// ´úÀí×é¼ş¿ËÂ¡¼°´¦Àí
-    /// </summary>
-    /// <param name="transCopy">¿ËÂ¡Ìåtransform</param>
-    /// <param name="transOrigin">Ô­ĞÍtransform</param>
-    private void CompClone(Transform transCopy, Transform transOrigin)
-    {
-        MeshFilter filter = transCopy.GetComponent<MeshFilter>();
-        MeshRenderer renderer = transCopy.GetComponent<MeshRenderer>();
-        if (filter)
-        {
-            filter.mesh = transOrigin.GetComponent<MeshFilter>().mesh;
-        }
-
-        if (renderer)
-        {
-            // renderer.materials = transOrigin.GetComponent<MeshRenderer>().materials;
-            Material[] origin = transOrigin.GetComponent<MeshRenderer>().materials;
-            Material[] copy = new Material[origin.Length];
-            for (int i = 0; i < origin.Length; i++)
-            {
-                copy[i] = new Material(origin[i]);
+                filter.mesh = transOrigin.GetComponent<MeshFilter>().mesh;
             }
 
-            renderer.materials = copy;
-            renderer.sortingOrder = 9999;
-        }
-
-        if (transCopy.childCount > 0)
-        {
-            for (int i = 0; i < transCopy.childCount; i++)
+            if (renderer)
             {
-                CompClone(transCopy.GetChild(i), transOrigin.GetChild(i));
+                // renderer.materials = transOrigin.GetComponent<MeshRenderer>().materials;
+                Material[] origin = transOrigin.GetComponent<MeshRenderer>().materials;
+                Material[] copy = new Material[origin.Length];
+                for (int i = 0; i < origin.Length; i++)
+                {
+                    copy[i] = new Material(origin[i]);
+                }
+
+                renderer.materials = copy;
+                renderer.sortingOrder = 9999;
+            }
+
+            if (transCopy.childCount > 0)
+            {
+                for (int i = 0; i < transCopy.childCount; i++)
+                {
+                    CompClone(transCopy.GetChild(i), transOrigin.GetChild(i));
+                }
             }
         }
     }

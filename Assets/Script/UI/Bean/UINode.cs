@@ -1,24 +1,27 @@
 ﻿using System.Collections.Generic;
 
-public class UINode
+namespace ReflectionUI
 {
-    /// <summary>
-    /// 父节点
-    /// </summary>
-    public UINode parent;
+    public class UINode
+    {
+        /// <summary>
+        /// 父节点
+        /// </summary>
+        public UINode parent;
 
-    /// <summary>
-    /// 层级索引
-    /// </summary>
-    public int layer;
+        /// <summary>
+        /// 层级索引
+        /// </summary>
+        public int layer;
 
-    /// <summary>
-    /// 所属UI
-    /// </summary>
-    public BaseView ui;
+        /// <summary>
+        /// 所属UI
+        /// </summary>
+        public BaseView ui;
 
-    /// <summary>
-    /// 子节点
-    /// </summary>
-    public Dictionary<string, UINode> children = new Dictionary<string, UINode>();
+        /// <summary>
+        /// 子节点
+        /// </summary>
+        public Dictionary<string, UINode> children = new Dictionary<string, UINode>();
+    }
 }

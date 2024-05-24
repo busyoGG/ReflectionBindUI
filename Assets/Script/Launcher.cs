@@ -1,8 +1,5 @@
-using System;
-using FairyGUI;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using ReflectionUI;
 
 public enum UIMouseState
 {
@@ -29,7 +26,7 @@ public class Launcher : MonoBehaviour
         UINode first = UIManager.Ins().ShowUI<TestView>("FGUI", "Test", "TestView0");
         UIManager.Ins().ShowUI<TestView>("FGUI", "Test", "TestView1");
         
-        ConsoleUtils.Log("²éÕÒUI",UIManager.Ins().GetUI("TestView0"));
+        ConsoleUtils.Log("ï¿½ï¿½ï¿½ï¿½UI",UIManager.Ins().GetUI("TestView0"));
     }
 
     private void OnGUI()
