@@ -401,17 +401,17 @@ namespace ReflectionUI
                     break;
                 case UIAction.DragStart:
                     obj.draggable = true;
-                    isAgent = condition == null || !condition.GetBool();
+                    isAgent = condition == null || condition.GetBool();
                     SetDragListener(obj, 0, method, isAgent);
                     break;
                 case UIAction.DragHold:
                     obj.draggable = true;
-                    isAgent = condition == null || !condition.GetBool();
+                    isAgent = condition == null || condition.GetBool();
                     SetDragListener(obj, 1, method, isAgent);
                     break;
                 case UIAction.DragEnd:
                     obj.draggable = true;
-                    isAgent = condition == null || !condition.GetBool();
+                    isAgent = condition == null || condition.GetBool();
                     SetDragListener(obj, 2, method, isAgent);
                     break;
                 case UIAction.Drop:

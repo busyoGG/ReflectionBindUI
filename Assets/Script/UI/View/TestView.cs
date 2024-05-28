@@ -54,7 +54,7 @@ public class TestView : BaseView
         EventManager.TriggerEvent("show_console", null);
     }
 
-    [UIActionBind(UIAction.DragEnd, "3")]
+    [UIActionBind(UIAction.DragEnd, "3"),UICondition(false)]
     private void OnDrag(EventContext context)
     {
         //添加拖拽数据
