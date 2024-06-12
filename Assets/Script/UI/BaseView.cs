@@ -101,6 +101,45 @@ namespace ReflectionUI
         {
             main.visible = visible;
         }
+        
+        /// <summary>
+        /// 添加缓动
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="target">缓动目标属性</param>
+        /// <param name="end">缓动目标值</param>
+        /// <param name="duration">持续时间</param>
+        /// <param name="ease">插值函数</param>
+        /// <param name="callback">回调</param>
+        protected int AddTween(GObject obj ,TweenTarget target, float end, int duration, TweenEaseType ease = TweenEaseType.Linear,
+            Action callback = null)
+        {
+            return UITweenManager.Ins().AddTween(obj, target, end, duration, ease, callback);
+        }
+        
+        /// <summary>
+        /// 添加缓动
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="target">缓动目标属性</param>
+        /// <param name="end">缓动目标值</param>
+        /// <param name="duration">持续时间</param>
+        /// <param name="ease">插值函数</param>
+        /// <param name="callback">回调</param>
+        protected int AddTween(GObject obj ,TweenTarget target, Vector2 end, int duration, TweenEaseType ease = TweenEaseType.Linear,
+            Action callback = null)
+        {
+            return UITweenManager.Ins().AddTween(obj, target, end, duration, ease, callback);
+        }
+
+        /// <summary>
+        /// 停止缓动
+        /// </summary>
+        /// <param name="id"></param>
+        protected void StopTween(int id)
+        {
+            UITweenManager.Ins().StopTween(id);
+        }
 
         /// <summary>
         /// 添加缓动
