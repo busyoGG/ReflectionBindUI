@@ -1,7 +1,6 @@
 using System;
 using System.Reflection;
 using FairyGUI;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace ReflectionUI
@@ -45,6 +44,8 @@ namespace ReflectionUI
 
             //绑定UI元素
             Bind();
+            //初始化数据
+            InitData();
 
             //绑定类
             var classAttributes = _type.GetCustomAttributes();
@@ -205,6 +206,14 @@ namespace ReflectionUI
         /// </summary>
         protected virtual void InitConfig()
         {
+        }
+        
+        /// <summary>
+        /// 初始化数据
+        /// </summary>
+        protected virtual void InitData()
+        {
+            
         }
 
         /// <summary>
