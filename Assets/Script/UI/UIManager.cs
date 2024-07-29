@@ -15,6 +15,23 @@ namespace ReflectionUI
         private Dictionary<string, UINode> _savedView = new Dictionary<string, UINode>();
 
         /// <summary>
+        /// 展示已存在的UI
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public UINode ShowUI(string name)
+        {
+            if (_savedView.TryGetValue(name, out var node))
+            {
+                node.ui.Show();
+                return node;
+            }
+
+            Debug.Log("UI未创建");
+            return null;
+        }
+        
+        /// <summary>
         /// 展示UI
         /// </summary>
         /// <param name="folder">UI所在文件夹</param>
