@@ -7,11 +7,24 @@ namespace ReflectionUI
     {
         private Dictionary<int, UITween> _actions = new Dictionary<int, UITween>();
 
+        private List<(int, UITween)> _waitToAdd = new List<(int, UITween)>();
+
         private List<int> _removeActionIndexes = new List<int>();
 
         void Update()
         {
             int delta = (int)(Time.deltaTime * 1000);
+
+            if (_waitToAdd.Count > 0)
+            {
+                for (int i = 0; i < _waitToAdd.Count; i++)
+                {
+                    var data = _waitToAdd[i];
+                    _actions.Add(data.Item1, data.Item2);
+                }
+                _waitToAdd.Clear();
+            }
+
             foreach (var action in _actions)
             {
                 UITween vt = action.Value;
@@ -35,7 +48,8 @@ namespace ReflectionUI
 
         public void AddTween(UITween tween)
         {
-            _actions.Add(tween.id, tween);
+            // _actions.Add(tween.id, tween);
+            _waitToAdd.Add((tween.id, tween));
         }
 
         public void StopTween(int id)
@@ -46,6 +60,14 @@ namespace ReflectionUI
             if (tween != null)
             {
                 tween.isStop = true;
+            }
+
+            foreach (var data in _waitToAdd)
+            {
+                if (data.Item1 == id)
+                {
+                    data.Item2.isStop = true;
+                }
             }
         }
     }

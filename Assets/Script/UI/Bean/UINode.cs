@@ -23,5 +23,12 @@ namespace ReflectionUI
         /// 子节点
         /// </summary>
         public Dictionary<string, UINode> children = new Dictionary<string, UINode>();
+        
+        public void Dispose()
+        {
+            parent.children.Remove(ui.id);
+            
+            ui.Dispose();
+        }
     }
 }

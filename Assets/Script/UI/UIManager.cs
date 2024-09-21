@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FairyGUI;
+using UnityEngine;
 
 namespace ReflectionUI
 {
@@ -106,6 +107,15 @@ namespace ReflectionUI
 
             return ui;
         }
+        
+        public void HideUI(string name)
+        {
+            var ui = GetUI(name);
+            if (ui != null)
+            {
+                HideUI(ui);
+            }
+        }
 
         /// <summary>
         /// 隐藏UI
@@ -153,6 +163,19 @@ namespace ReflectionUI
 
             return null;
         }
+        
+        /// <summary>
+        /// 销毁UI
+        /// </summary>
+        /// <param name="ui">UI节点</param>
+        public void DisposeUI(string name)
+        {
+            UINode ui = GetUI(name);
+            if (ui != null)
+            {
+                DisposeUI(ui);
+            }
+        }
 
         /// <summary>
         /// 销毁UI
@@ -160,17 +183,10 @@ namespace ReflectionUI
         /// <param name="ui">UI节点</param>
         public void DisposeUI(UINode ui)
         {
-            foreach (var child in ui.children)
-            {
-                UINode uiChild = child.Value;
-                DisposeUI(uiChild);
-            }
+            ui.Dispose();
 
             //移除保存的节点
             _savedView.Remove(ui.ui.name);
-            ui.children = null;
-            ui.parent = null;
-            ui.ui.Dispose();
         }
 
         /// <summary>
